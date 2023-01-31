@@ -5,23 +5,11 @@
         }
     },
     "compileClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-core": {
             "locked": "3.13.3"
-        },
-        "com.rabbitmq:amqp-client": {
-            "locked": "5.13.0"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1"
@@ -38,7 +26,19 @@
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
         },
+        "org.flywaydb:flyway-core": {
+            "locked": "8.0.5"
+        },
+        "org.postgresql:postgresql": {
+            "locked": "42.3.4"
+        },
+        "org.springdoc:springdoc-openapi-ui": {
+            "locked": "1.6.14"
+        },
         "org.springframework.boot:spring-boot-starter": {
+            "locked": "2.6.7"
+        },
+        "org.springframework.boot:spring-boot-starter-jdbc": {
             "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-web": {
@@ -46,23 +46,11 @@
         }
     },
     "runtimeClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-core": {
             "locked": "3.13.3"
-        },
-        "com.rabbitmq:amqp-client": {
-            "locked": "5.13.0"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1"
@@ -78,26 +66,26 @@
         },
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
+        },
+        "org.flywaydb:flyway-core": {
+            "locked": "8.0.5"
+        },
+        "org.postgresql:postgresql": {
+            "locked": "42.3.4"
+        },
+        "org.springdoc:springdoc-openapi-ui": {
+            "locked": "1.6.14"
+        },
+        "org.springframework.boot:spring-boot-starter-jdbc": {
+            "locked": "2.6.7"
         }
     },
     "testCompileClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-core": {
             "locked": "3.13.3"
-        },
-        "com.rabbitmq:amqp-client": {
-            "locked": "5.13.0"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1"
@@ -114,34 +102,40 @@
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
         },
+        "org.flywaydb:flyway-core": {
+            "locked": "8.0.5"
+        },
         "org.junit.vintage:junit-vintage-engine": {
             "locked": "5.8.2"
+        },
+        "org.postgresql:postgresql": {
+            "locked": "42.3.4"
+        },
+        "org.springdoc:springdoc-openapi-ui": {
+            "locked": "1.6.14"
+        },
+        "org.springframework.boot:spring-boot-starter-jdbc": {
+            "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
             "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-test": {
             "locked": "2.6.7"
+        },
+        "org.springframework.boot:spring-boot-starter-web": {
+            "locked": "2.6.7"
+        },
+        "org.testcontainers:postgresql": {
+            "locked": "1.17.2"
         }
     },
     "testRuntimeClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-core": {
             "locked": "3.13.3"
-        },
-        "com.rabbitmq:amqp-client": {
-            "locked": "5.13.0"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1"
@@ -158,14 +152,32 @@
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
         },
+        "org.flywaydb:flyway-core": {
+            "locked": "8.0.5"
+        },
         "org.junit.vintage:junit-vintage-engine": {
             "locked": "5.8.2"
+        },
+        "org.postgresql:postgresql": {
+            "locked": "42.3.4"
+        },
+        "org.springdoc:springdoc-openapi-ui": {
+            "locked": "1.6.14"
+        },
+        "org.springframework.boot:spring-boot-starter-jdbc": {
+            "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
             "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-test": {
             "locked": "2.6.7"
+        },
+        "org.springframework.boot:spring-boot-starter-web": {
+            "locked": "2.6.7"
+        },
+        "org.testcontainers:postgresql": {
+            "locked": "1.17.2"
         }
     }
 }

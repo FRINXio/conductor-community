@@ -5,328 +5,266 @@
         }
     },
     "compileClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
-        "com.netflix.conductor:conductor-common": {
-            "locked": "3.13.3"
-        },
-        "com.netflix.conductor:conductor-core": {
-            "locked": "3.13.3"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "javax.ws.rs:jsr311-api": {
-            "locked": "1.1.1"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
-        },
-        "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
-        },
-        "org.apache.logging.log4j:log4j-api": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-core": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-jul": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-slf4j-impl": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-web": {
-            "locked": "2.17.1"
-        },
-        "org.springframework.boot:spring-boot-starter": {
-            "locked": "2.6.7"
-        },
-        "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
-        },
-        "org.springframework.boot:spring-boot-test": {
-            "locked": "2.6.7"
-        },
-        "org.springframework:spring-web": {
-            "locked": "5.3.19"
-        }
-    },
-    "runtimeClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
-        "com.netflix.conductor:conductor-common": {
-            "locked": "3.13.3"
-        },
-        "com.netflix.conductor:conductor-core": {
-            "locked": "3.13.3"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "javax.ws.rs:jsr311-api": {
-            "locked": "1.1.1"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
-        },
-        "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
-        },
-        "org.apache.logging.log4j:log4j-api": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-core": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-jul": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-slf4j-impl": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-web": {
-            "locked": "2.17.1"
-        }
-    },
-    "testCompileClasspath": {
-        "com.google.guava:guava": {
-            "locked": "30.0-jre"
-        },
-        "com.netflix.conductor:conductor-common": {
-            "locked": "3.13.3"
-        },
-        "com.netflix.conductor:conductor-core": {
-            "locked": "3.13.3"
-        },
-        "com.netflix.conductor:conductor-test-util": {
-            "project": true
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "javax.ws.rs:jsr311-api": {
-            "locked": "1.1.1"
-        },
-        "org.apache.commons:commons-lang3": {
-            "locked": "3.12.0"
-        },
-        "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
-        },
-        "org.apache.logging.log4j:log4j-api": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-core": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-jul": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-slf4j-impl": {
-            "locked": "2.17.1"
-        },
-        "org.apache.logging.log4j:log4j-web": {
-            "locked": "2.17.1"
-        },
-        "org.codehaus.groovy:groovy-all": {
-            "locked": "3.0.9"
-        },
-        "org.junit.vintage:junit-vintage-engine": {
-            "locked": "5.8.2"
-        },
-        "org.mock-server:mockserver-client-java": {
-            "locked": "5.12.0"
-        },
-        "org.spockframework:spock-core": {
-            "locked": "2.1-groovy-3.0"
-        },
-        "org.spockframework:spock-spring": {
-            "locked": "2.1-groovy-3.0"
-        },
-        "org.springframework.boot:spring-boot-starter-log4j2": {
-            "locked": "2.6.7"
-        },
-        "org.springframework.boot:spring-boot-starter-test": {
-            "locked": "2.6.7"
-        },
-        "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
-        },
-        "org.testcontainers:mockserver": {
-            "locked": "1.17.2"
-        }
-    },
-    "testRuntimeClasspath": {
         "com.fasterxml.jackson.core:jackson-core": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.13.2"
         },
         "com.fasterxml.jackson.core:jackson-databind": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.13.2.1"
         },
         "com.google.guava:guava": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "30.0-jre"
         },
         "com.google.protobuf:protobuf-java": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
-            "locked": "3.21.7"
+            "locked": "3.13.0"
         },
         "com.netflix.conductor:conductor-client": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-common": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-core": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-grpc-client": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-grpc-server": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-redis-persistence": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-rest": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
         "com.netflix.conductor:conductor-server": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.13.3"
         },
-        "com.netflix.conductor:conductor-test-util": {
-            "project": true
-        },
         "com.netflix.dyno-queues:dyno-queues-redis": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.0.20"
         },
         "com.rabbitmq:amqp-client": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
-            "locked": "5.13.1"
-        },
-        "io.reactivex:rxjava": {
-            "locked": "1.2.2"
-        },
-        "javax.ws.rs:jsr311-api": {
-            "locked": "1.1.1"
+            "locked": "5.13.0"
         },
         "org.apache.commons:commons-lang3": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.12.0"
         },
-        "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
-        },
         "org.apache.logging.log4j:log4j-api": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.17.1"
         },
         "org.apache.logging.log4j:log4j-core": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.17.1"
         },
         "org.apache.logging.log4j:log4j-jul": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.17.1"
         },
         "org.apache.logging.log4j:log4j-slf4j-impl": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.17.1"
         },
         "org.apache.logging.log4j:log4j-web": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.17.1"
         },
         "org.codehaus.groovy:groovy-all": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "3.0.9"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "7.15.2"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
+            "locked": "7.15.2"
+        },
+        "org.spockframework:spock-core": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.spockframework:spock-spring": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.springframework.boot:spring-boot-starter-validation": {
+            "locked": "2.6.7"
+        },
+        "org.testcontainers:elasticsearch": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:mysql": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:postgresql": {
+            "locked": "1.17.2"
+        },
+        "redis.clients:jedis": {
+            "locked": "3.3.0"
+        }
+    },
+    "runtimeClasspath": {
+        "com.fasterxml.jackson.core:jackson-core": {
+            "locked": "2.13.2"
+        },
+        "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.13.2.1"
+        },
+        "com.google.guava:guava": {
+            "locked": "30.0-jre"
+        },
+        "com.google.protobuf:protobuf-java": {
+            "locked": "3.13.0"
+        },
+        "com.netflix.conductor:conductor-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-common": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-core": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-redis-persistence": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-rest": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.dyno-queues:dyno-queues-redis": {
+            "locked": "2.0.20"
+        },
+        "com.rabbitmq:amqp-client": {
+            "locked": "5.13.0"
+        },
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.12.0"
+        },
+        "org.apache.logging.log4j:log4j-api": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-core": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-jul": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-slf4j-impl": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-web": {
+            "locked": "2.17.1"
+        },
+        "org.codehaus.groovy:groovy-all": {
+            "locked": "3.0.9"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-client": {
+            "locked": "7.15.2"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
+            "locked": "7.15.2"
+        },
+        "org.spockframework:spock-core": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.spockframework:spock-spring": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.springframework.boot:spring-boot-starter-validation": {
+            "locked": "2.6.7"
+        },
+        "org.testcontainers:elasticsearch": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:mysql": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:postgresql": {
+            "locked": "1.17.2"
+        },
+        "redis.clients:jedis": {
+            "locked": "3.3.0"
+        }
+    },
+    "testCompileClasspath": {
+        "com.fasterxml.jackson.core:jackson-core": {
+            "locked": "2.13.2"
+        },
+        "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.13.2.1"
+        },
+        "com.google.guava:guava": {
+            "locked": "30.0-jre"
+        },
+        "com.google.protobuf:protobuf-java": {
+            "locked": "3.13.0"
+        },
+        "com.netflix.conductor:conductor-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-common": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-core": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-redis-persistence": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-rest": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.dyno-queues:dyno-queues-redis": {
+            "locked": "2.0.20"
+        },
+        "com.rabbitmq:amqp-client": {
+            "locked": "5.13.0"
+        },
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.12.0"
+        },
+        "org.apache.logging.log4j:log4j-api": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-core": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-jul": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-slf4j-impl": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-web": {
+            "locked": "2.17.1"
+        },
+        "org.codehaus.groovy:groovy-all": {
+            "locked": "3.0.9"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-client": {
+            "locked": "7.15.2"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
             "locked": "7.15.2"
         },
         "org.junit.vintage:junit-vintage-engine": {
             "locked": "5.8.2"
         },
-        "org.mock-server:mockserver-client-java": {
-            "locked": "5.12.0"
-        },
         "org.spockframework:spock-core": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.1-groovy-3.0"
         },
         "org.spockframework:spock-spring": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.1-groovy-3.0"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
@@ -336,40 +274,126 @@
             "locked": "2.6.7"
         },
         "org.springframework.boot:spring-boot-starter-validation": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "2.6.7"
         },
-        "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
+        "org.springframework:spring-web": {
+            "locked": "5.3.19"
         },
         "org.testcontainers:elasticsearch": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
-            "locked": "1.17.2"
-        },
-        "org.testcontainers:mockserver": {
             "locked": "1.17.2"
         },
         "org.testcontainers:mysql": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "1.17.2"
         },
         "org.testcontainers:postgresql": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
             "locked": "1.17.2"
         },
         "redis.clients:jedis": {
-            "firstLevelTransitive": [
-                "com.netflix.conductor:conductor-test-util"
-            ],
-            "locked": "3.7.1"
+            "locked": "3.3.0"
+        }
+    },
+    "testRuntimeClasspath": {
+        "com.fasterxml.jackson.core:jackson-core": {
+            "locked": "2.13.2"
+        },
+        "com.fasterxml.jackson.core:jackson-databind": {
+            "locked": "2.13.2.1"
+        },
+        "com.google.guava:guava": {
+            "locked": "30.0-jre"
+        },
+        "com.google.protobuf:protobuf-java": {
+            "locked": "3.13.0"
+        },
+        "com.netflix.conductor:conductor-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-common": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-core": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-client": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-grpc-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-redis-persistence": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-rest": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.conductor:conductor-server": {
+            "locked": "3.13.3"
+        },
+        "com.netflix.dyno-queues:dyno-queues-redis": {
+            "locked": "2.0.20"
+        },
+        "com.rabbitmq:amqp-client": {
+            "locked": "5.13.0"
+        },
+        "org.apache.commons:commons-lang3": {
+            "locked": "3.12.0"
+        },
+        "org.apache.logging.log4j:log4j-api": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-core": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-jul": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-slf4j-impl": {
+            "locked": "2.17.1"
+        },
+        "org.apache.logging.log4j:log4j-web": {
+            "locked": "2.17.1"
+        },
+        "org.codehaus.groovy:groovy-all": {
+            "locked": "3.0.9"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-client": {
+            "locked": "7.15.2"
+        },
+        "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
+            "locked": "7.15.2"
+        },
+        "org.junit.vintage:junit-vintage-engine": {
+            "locked": "5.8.2"
+        },
+        "org.spockframework:spock-core": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.spockframework:spock-spring": {
+            "locked": "2.1-groovy-3.0"
+        },
+        "org.springframework.boot:spring-boot-starter-log4j2": {
+            "locked": "2.6.7"
+        },
+        "org.springframework.boot:spring-boot-starter-test": {
+            "locked": "2.6.7"
+        },
+        "org.springframework.boot:spring-boot-starter-validation": {
+            "locked": "2.6.7"
+        },
+        "org.springframework:spring-web": {
+            "locked": "5.3.19"
+        },
+        "org.testcontainers:elasticsearch": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:mysql": {
+            "locked": "1.17.2"
+        },
+        "org.testcontainers:postgresql": {
+            "locked": "1.17.2"
+        },
+        "redis.clients:jedis": {
+            "locked": "3.3.0"
         }
     }
 }
