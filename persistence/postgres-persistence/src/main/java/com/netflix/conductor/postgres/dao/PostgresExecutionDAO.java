@@ -19,9 +19,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -59,7 +57,9 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
     public PostgresExecutionDAO(
             RetryTemplate retryTemplate, ObjectMapper objectMapper, DataSource dataSource) {
         super(retryTemplate, objectMapper, dataSource);
-        this.executor = Executors.newSingleThreadScheduledExecutor(runnable -> new Thread(THREAD_GROUP, runnable));
+        this.executor =
+                Executors.newSingleThreadScheduledExecutor(
+                        runnable -> new Thread(THREAD_GROUP, runnable));
     }
 
     private static String dateStr(Long timeInMs) {
@@ -319,18 +319,19 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
         return removed;
     }
 
-    /**
-     * Scheduled executor based implementation.
-     */
+    /** Scheduled executor based implementation. */
     @Override
     public boolean removeWorkflowWithExpiry(String workflowId, int ttlSeconds) {
-        executor.schedule(() -> {
-            try {
-                removeWorkflow(workflowId);
-            } catch (Throwable e) {
-                logger.warn("Unable to remove workflow: {} with expiry", workflowId, e);
-            }
-        }, ttlSeconds, TimeUnit.SECONDS);
+        executor.schedule(
+                () -> {
+                    try {
+                        removeWorkflow(workflowId);
+                    } catch (Throwable e) {
+                        logger.warn("Unable to remove workflow: {} with expiry", workflowId, e);
+                    }
+                },
+                ttlSeconds,
+                TimeUnit.SECONDS);
 
         return true;
     }
