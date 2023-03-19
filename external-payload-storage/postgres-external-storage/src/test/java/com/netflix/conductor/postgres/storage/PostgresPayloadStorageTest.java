@@ -268,12 +268,12 @@ public class PostgresPayloadStorageTest {
 
     private void assertCount(int expected) throws SQLException {
         try (PreparedStatement stmt =
-                        testPostgres
-                                .getDataSource()
-                                .getConnection()
-                                .prepareStatement(
-                                        "SELECT count(id) FROM external.external_payload");
-                ResultSet rs = stmt.executeQuery()) {
+                     testPostgres
+                             .getDataSource()
+                             .getConnection()
+                             .prepareStatement(
+                                     "SELECT count(id) FROM external.external_payload");
+             ResultSet rs = stmt.executeQuery()) {
             rs.next();
             assertEquals(expected, rs.getInt(1));
         }
@@ -281,9 +281,9 @@ public class PostgresPayloadStorageTest {
 
     private String getCreatedOn(String key) throws SQLException {
         try (Connection conn = testPostgres.getDataSource().getConnection();
-                PreparedStatement stmt =
-                        conn.prepareStatement(
-                                "SELECT created_on FROM external.external_payload WHERE id = ?")) {
+             PreparedStatement stmt =
+                     conn.prepareStatement(
+                             "SELECT created_on FROM external.external_payload WHERE id = ?")) {
             stmt.setString(1, key);
             try (ResultSet rs = stmt.executeQuery()) {
                 rs.next();
