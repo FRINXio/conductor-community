@@ -13,6 +13,8 @@ package com.netflix.conductor.postgres.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -356,6 +358,33 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
         }
         return workflow;
     }
+
+    @Override
+    public List<String> getWorkflowPath(String workflowId) {
+        return getWithRetriedTransactions(connection -> {
+            PreparedStatement statement = connection.prepareStatement(
+                    "WITH RECURSIVE workflow_path AS (" +
+                            "   SELECT" +
+                            "       workflow_id, json_data::json->>'parentWorkflowId' as parent_workflow_id from workflow child_wf where workflow_id = ?" +
+                            "   UNION ALL" +
+                            "   SELECT parent_wf.workflow_id workflow_id, parent_wf.json_data::json->>'parentWorkflowId' as parent_workflow_id" +
+                            "   FROM workflow AS parent_wf" +
+                            "      JOIN workflow_path child_wf ON child_wf.parent_workflow_id = parent_wf.workflow_id" +
+                            ")\n" +
+                            "SELECT workflow_id, parent_workflow_id FROM workflow_path;"
+            );
+            statement.setString(1, workflowId);
+            ResultSet rs = statement.executeQuery();
+            List<String> results = new ArrayList<>();
+            while (rs.next()) {
+                String wfId = rs.getString("workflow_id");
+                results.add(wfId);
+            }
+            Collections.reverse(results);
+            return results;
+        });
+    }
+
 
     /**
      * @param workflowName name of the workflow
