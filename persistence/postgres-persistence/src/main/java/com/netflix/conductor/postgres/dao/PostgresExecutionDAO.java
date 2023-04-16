@@ -394,13 +394,18 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
      */
     @Override
     public List<String> getRunningWorkflowIds(String workflowName, int version) {
-        Preconditions.checkNotNull(workflowName, "workflowName cannot be null");
         String GET_PENDING_WORKFLOW_IDS =
                 "SELECT workflow_id FROM workflow_pending WHERE workflow_type = ? FOR SHARE SKIP LOCKED";
+        String GET_PENDING_WORKFLOW_IDS_ALL =
+                "SELECT workflow_id FROM workflow_pending FOR SHARE SKIP LOCKED";
 
-        return queryWithTransaction(
-                GET_PENDING_WORKFLOW_IDS,
-                q -> q.addParameter(workflowName).executeScalarList(String.class));
+        if (Objects.equals(workflowName, "ALL_WORKFLOW_TYPES")) {
+            return queryWithTransaction(GET_PENDING_WORKFLOW_IDS_ALL, q -> q.executeScalarList(String.class));
+        } else {
+            return queryWithTransaction(
+                    GET_PENDING_WORKFLOW_IDS,
+                    q -> q.addParameter(workflowName).executeScalarList(String.class));
+        }
     }
 
     /**
