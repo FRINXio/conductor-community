@@ -54,7 +54,7 @@ public class PostgresArchivePerformanceTest {
         dataSource.setPassword("postgres");
         dataSource.setAutoCommit(false);
         dataSource.setMaximumPoolSize(10);
-        archiveDAO = new PostgresArchiveDAO(objectMapper, dataSource, dataSource);
+        archiveDAO = new PostgresArchiveDAO(objectMapper, dataSource);
         faker = new Faker();
     }
 

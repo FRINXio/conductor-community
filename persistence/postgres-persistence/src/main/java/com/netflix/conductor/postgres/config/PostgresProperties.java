@@ -13,12 +13,15 @@ package com.netflix.conductor.postgres.config;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 @ConfigurationProperties("conductor.postgres")
 public class PostgresProperties {
+
+    @Value("${conductor.outbox.table.enabled}")
+    private boolean outboxEnabled;
 
     /** The time in seconds after which the in-memory task definitions cache will be invalidated */
     @DurationUnit(ChronoUnit.SECONDS)
@@ -73,4 +76,6 @@ public class PostgresProperties {
     public void setCachingEnabled(boolean cachingEnabled) {
         this.cachingEnabled = cachingEnabled;
     }
+
+    public boolean isOutboxEnabled() { return outboxEnabled; }
 }
