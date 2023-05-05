@@ -53,12 +53,10 @@ public class PostgresArchiveDAOConfiguration {
 
     @Bean(initMethod = "migrate", name = "flyway")
     @PostConstruct
-    public Flyway flywayForPrimaryDb() {
+    public Flyway flywayForArchiveDb() {
         return Flyway.configure()
-                .locations(
-                        "classpath:db/migration_postgres",
-                        "classpath:db/migration_archive_postgres")
-                .schemas("public")
+                .locations("classpath:db/migration_archive_postgres")
+                .schemas("archive")
                 .dataSource(dataSource)
                 .baselineOnMigrate(true)
                 .mixed(true)
@@ -69,9 +67,7 @@ public class PostgresArchiveDAOConfiguration {
     public FlywayConfigurationCustomizer flywayConfigurationCustomizer() {
         // override the default location.
         return configuration ->
-                configuration.locations(
-                        "classpath:db/migration_postgres",
-                        "classpath:db/migration_archive_postgres");
+                configuration.locations("classpath:db/migration_archive_postgres");
     }
 
     @Bean
@@ -79,6 +75,6 @@ public class PostgresArchiveDAOConfiguration {
     @ConditionalOnProperty(value = "conductor.archive.db.type", havingValue = "postgres")
     public PostgresArchiveDAO getPostgresArchiveDAO(
             @Qualifier("searchDatasource") DataSource searchDatasource) {
-        return new PostgresArchiveDAO(objectMapper, dataSource, searchDatasource);
+        return new PostgresArchiveDAO(objectMapper, searchDatasource);
     }
 }

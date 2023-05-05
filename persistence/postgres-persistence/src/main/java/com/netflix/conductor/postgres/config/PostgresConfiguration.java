@@ -17,6 +17,8 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import com.netflix.conductor.dao.ExecutionDAO;
+import com.netflix.conductor.postgres.config.outbox.OutboxExecutionDAO;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -75,10 +77,14 @@ public class PostgresConfiguration {
 
     @Bean
     @DependsOn({"flywayForPrimaryDb"})
-    public PostgresExecutionDAO postgresExecutionDAO(
+    public ExecutionDAO postgresExecutionDAO(
             @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
             ObjectMapper objectMapper) {
-        return new PostgresExecutionDAO(retryTemplate, objectMapper, dataSource);
+        var postgresExecDAO = new PostgresExecutionDAO(retryTemplate, objectMapper, dataSource);
+        if (properties.isOutboxEnabled()) {
+            return new OutboxExecutionDAO(retryTemplate, objectMapper, dataSource, postgresExecDAO);
+        }
+        return postgresExecDAO;
     }
 
     @Bean

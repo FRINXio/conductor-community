@@ -41,48 +41,45 @@ import org.springframework.retry.support.RetryTemplate;
 public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, DocumentStoreDAO {
 
     private static final String GET_WORKFLOW =
-            "SELECT json_data FROM workflow_archive WHERE workflow_id = ? FOR SHARE SKIP LOCKED";
+            "SELECT json_data FROM archive.workflow_archive WHERE workflow_id = ? FOR SHARE SKIP LOCKED";
 
     private static final String REMOVE_WORKFLOW =
-            "DELETE FROM workflow_archive WHERE workflow_id = ?";
+            "DELETE FROM archive.workflow_archive WHERE workflow_id = ?";
     public static final String UNKNOWN = PostgresArchiveDAO.class.getName() + "_UNKNOWN";
     public static final String GET_WORKFLOW_FAMILY = "WITH RECURSIVE workflow_hierarchy AS (" +
             "   SELECT" +
-            "       workflow_id, parent_workflow_id, json_data, status from workflow_archive where workflow_id = ?" +
+            "       workflow_id, parent_workflow_id, json_data, status from archive.workflow_archive where workflow_id = ?" +
             "   UNION ALL" +
             "   SELECT child_wf.workflow_id workflow_id, child_wf.parent_workflow_id, child_wf.json_data, child_wf.status" +
-            "   FROM workflow_archive AS child_wf" +
+            "   FROM archive.workflow_archive AS child_wf" +
             "      JOIN workflow_hierarchy parent_wf ON child_wf.parent_workflow_id = parent_wf.workflow_id" +
             ")\n" +
             "SELECT workflow_id, parent_workflow_id, json_data, status FROM workflow_hierarchy;";
     public static final String GET_WORKFLOW_FAMILY_SUMMARY = "WITH RECURSIVE workflow_hierarchy AS (" +
             "   SELECT" +
-            "       workflow_id, parent_workflow_id, status from workflow_archive where workflow_id = ?" +
+            "       workflow_id, parent_workflow_id, status from archive.workflow_archive where workflow_id = ?" +
             "   UNION ALL" +
             "   SELECT child_wf.workflow_id workflow_id, child_wf.parent_workflow_id, child_wf.status" +
-            "   FROM workflow_archive AS child_wf" +
+            "   FROM archive.workflow_archive AS child_wf" +
             "      JOIN workflow_hierarchy parent_wf ON child_wf.parent_workflow_id = parent_wf.workflow_id" +
             ")\n" +
             "SELECT workflow_id, parent_workflow_id, status FROM workflow_hierarchy;";
     public static final String GET_WORKFLOW_PATH = "WITH RECURSIVE workflow_path AS (" +
             "   SELECT" +
-            "       workflow_id, parent_workflow_id from workflow_archive child_wf where workflow_id = ?" +
+            "       workflow_id, parent_workflow_id from archive.workflow_archive child_wf where workflow_id = ?" +
             "   UNION ALL" +
             "   SELECT parent_wf.workflow_id workflow_id, parent_wf.parent_workflow_id" +
-            "   FROM workflow_archive AS parent_wf" +
+            "   FROM archive.workflow_archive AS parent_wf" +
             "      JOIN workflow_path child_wf ON child_wf.parent_workflow_id = parent_wf.workflow_id" +
             ")\n" +
             "SELECT workflow_id, parent_workflow_id FROM workflow_path;";
 
     private final DataSource searchDatasource;
 
-    private static final String TABLE_NAME = "workflow_archive";
-
     public PostgresArchiveDAO(
             ObjectMapper objectMapper,
-            DataSource dataSource,
             @Qualifier("searchDatasource") DataSource searchDatasource) {
-        super(RetryTemplate.defaultInstance(), objectMapper, dataSource);
+        super(RetryTemplate.defaultInstance(), objectMapper, searchDatasource);
         this.searchDatasource = searchDatasource;
 
         log.info("Using {} as search datasource", searchDatasource);
@@ -98,7 +95,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
         String INSERT_OR_UPDATE_LATEST =
                 "INSERT INTO "
-                        + TABLE_NAME
+                        + "archive.workflow_archive"
                         + " as wf"
                         + "(workflow_id, created_on, modified_on, correlation_id, workflow_name, status, index_data, created_by, json_data, parent_workflow_id) "
                         + "VALUES "
@@ -107,7 +104,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                         + "UPDATE SET modified_on = ?, status = ?, index_data = ?, json_data = ? "
                         + "WHERE wf.modified_on < ? ;";
 
-        try (Connection connection = super.dataSource.getConnection()) {
+        try (Connection connection = searchDatasource.getConnection()) {
             connection.setAutoCommit(true);
             PreparedStatement statement = connection.prepareStatement(INSERT_OR_UPDATE_LATEST);
 
@@ -171,7 +168,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
     @Override
     public WorkflowModel getWorkflow(String workflowId, boolean includeTasks) {
-        try (Connection connection = super.dataSource.getConnection()) {
+        try (Connection connection = searchDatasource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(GET_WORKFLOW);
             statement.setString(1, workflowId);
             ResultSet rs = statement.executeQuery();
@@ -191,7 +188,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
     @Override
     public List<String> getWorkflowPath(String workflowId) {
-        try (Connection connection = super.dataSource.getConnection()) {
+        try (Connection connection = searchDatasource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(GET_WORKFLOW_PATH);
             statement.setString(1, workflowId);
             ResultSet rs = statement.executeQuery();
@@ -265,7 +262,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
         SearchQuery parsedQuery = SearchQuery.parse(query);
         SearchResult<String> results =
-                search(TABLE_NAME, parsedQuery, freeText.trim(), count, start);
+                search("archive.workflow_archive", parsedQuery, freeText.trim(), count, start);
         ScrollableSearchResult<String> scrollableSearchResult = new ScrollableSearchResult<>();
         scrollableSearchResult.setResults(results.getResults());
         return scrollableSearchResult;
@@ -426,7 +423,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
     // Private Methods
     @Override
     public List<TaskExecLog> getTaskExecutionLogs(String taskId) {
-        String GET_TASK = "SELECT seq, log, created_on FROM task_logs WHERE task_id = ?";
+        String GET_TASK = "SELECT seq, log, created_on FROM archive.task_logs WHERE task_id = ?";
         return queryWithTransaction(
                 GET_TASK,
                 q -> {
@@ -450,7 +447,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
     @Override
     public void addTaskExecutionLogs(List<TaskExecLog> logs) {
-        String INSERT_STMT = "INSERT INTO task_logs (task_id, log, created_on) values(?,?,?)";
+        String INSERT_STMT = "INSERT INTO archive.task_logs (task_id, log, created_on) values(?,?,?)";
         for (TaskExecLog taskExecLog : logs) {
             withTransaction(
                     tx -> {
@@ -474,7 +471,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
     @Override
     public List<WorkflowModel> getWorkflowFamily(String workflowId, boolean summaryOnly) {
         String select = summaryOnly ? GET_WORKFLOW_FAMILY_SUMMARY : GET_WORKFLOW_FAMILY;
-        try (Connection connection = super.dataSource.getConnection()) {
+        try (Connection connection = searchDatasource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(select);
             statement.setString(1, workflowId);
             ResultSet rs = statement.executeQuery();

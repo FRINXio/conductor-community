@@ -63,7 +63,6 @@ public class PostgresArchiveDAOTest {
         archiveDAO =
                 new PostgresArchiveDAO(
                         testPostgres.getObjectMapper(),
-                        testPostgres.getDataSource(),
                         testPostgres.getDataSource());
     }
 
