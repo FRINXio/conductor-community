@@ -56,6 +56,7 @@ public class PostgresDAOTestUtil {
     private void flywayMigrate(DataSource dataSource) {
         FluentConfiguration fluentConfiguration =
                 Flyway.configure()
+                        .schemas("archive")
                         .table("schema_version")
                         .locations(Paths.get("db", "migration_archive_postgres").toString())
                         .dataSource(dataSource)

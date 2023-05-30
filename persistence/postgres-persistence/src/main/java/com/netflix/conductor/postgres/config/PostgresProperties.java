@@ -20,7 +20,7 @@ import org.springframework.boot.convert.DurationUnit;
 @ConfigurationProperties("conductor.postgres")
 public class PostgresProperties {
 
-    @Value("${conductor.outbox.table.enabled}")
+    @Value("${conductor.outbox.table.enabled:false}")
     private boolean outboxEnabled;
 
     /** The time in seconds after which the in-memory task definitions cache will be invalidated */
