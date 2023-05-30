@@ -162,7 +162,7 @@ public class OutboxExecutionDAO extends PostgresBaseDAO implements ExecutionDAO,
      * payload - json containing workflow id, task id and status of the task
      * evenType - task/workflow update state differentiator
      *
-     * @param connection Hicari connection
+     * @param connection db connection
      * @param task       task
      */
     private void writeTaskToOutbox(Connection connection, TaskModel task) {
@@ -208,7 +208,7 @@ public class OutboxExecutionDAO extends PostgresBaseDAO implements ExecutionDAO,
      * payload - json containing workflow id, task id and status of the task
      * evenType - task/workflow update state differentiator
      *
-     * @param connection Hicari connection
+     * @param connection db connection
      * @param workflow   workflow
      */
     private void writeWorkflowToOutbox(Connection connection, WorkflowModel workflow) {
