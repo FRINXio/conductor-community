@@ -11,6 +11,7 @@
  */
 package com.netflix.conductor.postgres.dao;
 
+import com.netflix.conductor.postgres.FlywayTestDependencyConfiguration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,8 @@ import static org.junit.Assert.assertTrue;
         classes = {
             TestObjectMapperConfiguration.class,
             PostgresConfiguration.class,
-            FlywayAutoConfiguration.class
+            FlywayAutoConfiguration.class,
+            FlywayTestDependencyConfiguration.class
         })
 @RunWith(SpringRunner.class)
 @SpringBootTest
