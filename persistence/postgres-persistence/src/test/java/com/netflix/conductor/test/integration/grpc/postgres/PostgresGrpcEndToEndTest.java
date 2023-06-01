@@ -19,7 +19,7 @@ import com.netflix.conductor.postgres.FlywayTestDependencyConfiguration;
 import com.netflix.conductor.test.integration.grpc.AbstractGrpcEndToEndTest;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -36,10 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
             "spring.datasource.hikari.maximum-pool-size=8",
             "spring.datasource.hikari.minimum-idle=300000"
         })
-@ContextConfiguration(
-        classes = {
-                FlywayTestDependencyConfiguration.class
-        })
+@Import(FlywayTestDependencyConfiguration.class)
 public class PostgresGrpcEndToEndTest extends AbstractGrpcEndToEndTest {
 
     @Before
