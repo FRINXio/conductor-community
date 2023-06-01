@@ -11,16 +11,25 @@
  */
 package com.netflix.conductor.postgres.dao;
 
-import com.netflix.conductor.postgres.FlywayTestDependencyConfiguration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
+import com.netflix.conductor.core.events.queue.Message;
+import com.netflix.conductor.postgres.config.PostgresConfiguration;
+import com.netflix.conductor.postgres.util.Query;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.sql.DataSource;
-
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,26 +45,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
-import com.netflix.conductor.core.events.queue.Message;
-import com.netflix.conductor.postgres.config.PostgresConfiguration;
-import com.netflix.conductor.postgres.util.Query;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 @ContextConfiguration(
         classes = {
             TestObjectMapperConfiguration.class,
             PostgresConfiguration.class,
             FlywayAutoConfiguration.class,
-            FlywayTestDependencyConfiguration.class
         })
 @RunWith(SpringRunner.class)
 @SpringBootTest
