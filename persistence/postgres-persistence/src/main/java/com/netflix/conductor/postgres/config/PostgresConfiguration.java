@@ -58,6 +58,11 @@ public class PostgresConfiguration {
 
     @Bean(initMethod = "migrate")
     @PostConstruct
+    // FIXME remove depends on annotation in the next version. Once any migration problems are solved
+    // It forces spring to first perform flyway migration of the archive package
+    // to ensure proper ordering of migrations. Archive migrations have some cleanup to do.
+    // This should no longer be needed in subsequent versions. just moving between 2.1.4 -> 2.1.5
+    @DependsOn("flyway")
     public Flyway flywayForPrimaryDb() {
         return Flyway.configure()
                 .locations("classpath:db/migration_postgres")
