@@ -32,7 +32,7 @@ dependencies {
 
     testImplementation project(":conductor-server")
     testImplementation project(":conductor-client")
-    testImplementation project(":conductor-grpc-client")
+    //testImplementation project(":conductor-grpc-client")
     testImplementation project(":conductor-es6-persistence")
 
     testImplementation "org.testcontainers:postgresql:${revTestContainer}"
