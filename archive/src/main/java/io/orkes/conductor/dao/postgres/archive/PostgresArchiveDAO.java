@@ -423,7 +423,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
     // Private Methods
     @Override
     public List<TaskExecLog> getTaskExecutionLogs(String taskId) {
-        String GET_TASK = "SELECT seq, log, created_on FROM archive.task_logs WHERE task_id = ?";
+        String GET_TASK = "SELECT seq, log, created_on FROM archive.task_logs WHERE task_id = ? order by seq";
         return queryWithTransaction(
                 GET_TASK,
                 q -> {
