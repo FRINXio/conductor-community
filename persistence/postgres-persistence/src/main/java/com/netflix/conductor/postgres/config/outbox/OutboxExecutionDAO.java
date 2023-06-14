@@ -119,30 +119,22 @@ public class OutboxExecutionDAO extends PostgresBaseDAO implements ExecutionDAO,
 
     private void updateWorkflowOutboxTable(WorkflowModel workflow) {
         Preconditions.checkNotNull(workflow, "workflow object cannot be null");
-        boolean terminal = workflow.getStatus().isTerminal();
 
         try {
             withTransaction(
-                    tx -> {
-                        if (terminal) {
-                            writeWorkflowToOutbox(tx, workflow);
-                        }
-                    });
+                    tx -> writeWorkflowToOutbox(tx, workflow));
         } catch (NonTransientException e) {
             LOGGER.error("Writing workflow with id: {} to outbox table failed", workflow.getWorkflowId(), e);
         }
     }
 
     private void updateTasksOutboxTable(TaskModel task) {
-        boolean terminal = task.getStatus().isTerminal();
 
         try {
             withTransaction(
                     connection -> {
-                        if (terminal) {
                             validateTask(task);
                             writeTaskToOutbox(connection, task);
-                        }
                     });
         } catch (NonTransientException e) {
             LOGGER.error("Writing task with id: {} to outbox table failed", task.getTaskId(), e);
