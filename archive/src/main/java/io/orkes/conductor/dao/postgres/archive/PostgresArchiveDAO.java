@@ -14,6 +14,7 @@ package io.orkes.conductor.dao.postgres.archive;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.common.metadata.tasks.TaskExecLog;
+import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
 import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.model.WorkflowModel;
 import com.netflix.conductor.postgres.dao.PostgresBaseDAO;
@@ -42,6 +43,9 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
     private static final String GET_WORKFLOW =
             "SELECT json_data FROM archive.workflow_archive WHERE workflow_id = ? FOR SHARE SKIP LOCKED";
+
+    private static final String GET_WORKFLOW_FALLBACK =
+            "SELECT * FROM archive.workflow_archive WHERE workflow_id = ? FOR SHARE SKIP LOCKED";
 
     private static final String REMOVE_WORKFLOW =
             "DELETE FROM archive.workflow_archive WHERE workflow_id = ?";
@@ -175,7 +179,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
             if (rs.next()) {
                 byte[] json = rs.getBytes("json_data");
                 if (json == null || json.length == 0) {
-                    return null;
+                    return getWorkflowFallback(connection, workflowId);
                 }
                 return objectMapper.readValue(json, WorkflowModel.class);
             }
@@ -185,6 +189,35 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
         }
         return null;
     }
+
+    /**
+     * Create artificial workflow object from the metadata stored in archive. This is a fallback in
+     * case json_data is unavailable. This workflow only contains the very basic parameters. No
+     * tasks, inputs, outputs etc.
+     */
+    private WorkflowModel getWorkflowFallback(Connection connection, String workflowId)
+            throws Exception {
+        PreparedStatement statement = connection.prepareStatement(GET_WORKFLOW_FALLBACK);
+        statement.setString(1, workflowId);
+        ResultSet rs = statement.executeQuery();
+        if (rs.next()) {
+            final WorkflowDef workflowDefinition = new WorkflowDef();
+            workflowDefinition.setName(rs.getString("workflow_name"));
+
+            final WorkflowModel workflowModel = new WorkflowModel();
+            workflowModel.setWorkflowId(workflowId);
+            workflowModel.setParentWorkflowId(rs.getString("parent_workflow_id"));
+            workflowModel.setWorkflowDefinition(workflowDefinition);
+            workflowModel.setCorrelationId(rs.getString("correlation_id"));
+            workflowModel.setStatus(WorkflowModel.Status.valueOf(rs.getString("status")));
+            workflowModel.setCreateTime(rs.getLong("created_on"));
+            workflowModel.setCreatedBy(rs.getString("created_by"));
+            return workflowModel;
+        }
+
+        return null;
+    }
+
 
     @Override
     public List<String> getWorkflowPath(String workflowId) {
