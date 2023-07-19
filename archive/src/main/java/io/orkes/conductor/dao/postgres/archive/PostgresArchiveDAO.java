@@ -61,13 +61,24 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
             "SELECT workflow_id, parent_workflow_id, json_data, status FROM workflow_hierarchy;";
     public static final String GET_WORKFLOW_FAMILY_SUMMARY = "WITH RECURSIVE workflow_hierarchy AS (" +
             "   SELECT" +
-            "       workflow_id, parent_workflow_id, status from archive.workflow_archive where workflow_id = ?" +
+            "       workflow_id, parent_workflow_id, status," +
+            "   CASE" +
+            "       WHEN json_data LIKE '%\"completedWithErrors\":true%' THEN true" +
+            "       WHEN json_data LIKE '%\"completedWithErrors\":false%' THEN false" +
+            "       ELSE NULL"  +
+            "   END AS completed_with_errors" +
+            "   from archive.workflow_archive where workflow_id = ?" +
             "   UNION ALL" +
-            "   SELECT child_wf.workflow_id workflow_id, child_wf.parent_workflow_id, child_wf.status" +
+            "   SELECT child_wf.workflow_id workflow_id, child_wf.parent_workflow_id, child_wf.status," +
+            "   CASE" +
+            "       WHEN child_wf.json_data LIKE '%\"completedWithErrors\":true%' THEN true" +
+            "       WHEN child_wf.json_data LIKE '%\"completedWithErrors\":false%' THEN false" +
+            "       ELSE null" +
+            "   END AS completed_with_errors" +
             "   FROM archive.workflow_archive AS child_wf" +
             "      JOIN workflow_hierarchy parent_wf ON child_wf.parent_workflow_id = parent_wf.workflow_id" +
             ")\n" +
-            "SELECT workflow_id, parent_workflow_id, status FROM workflow_hierarchy;";
+            "SELECT workflow_id, parent_workflow_id, status, completed_with_errors FROM workflow_hierarchy;";
     public static final String GET_WORKFLOW_PATH = "WITH RECURSIVE workflow_path AS (" +
             "   SELECT" +
             "       workflow_id, parent_workflow_id from archive.workflow_archive child_wf where workflow_id = ?" +
@@ -515,7 +526,11 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                 String status = rs.getString("status");
                 String json = summaryOnly ? "" : rs.getString("json_data");
                 if (com.google.common.base.Strings.isNullOrEmpty(json)) {
-                    results.add(new WorkflowModelSummary(wfId, parentWfId, status));
+                    Boolean completedWithErrors = rs.getBoolean("completed_with_errors");
+                    if (rs.wasNull()) {
+                        completedWithErrors = null;
+                    }
+                    results.add(new WorkflowModelSummary(wfId, parentWfId, status,  completedWithErrors));
                 } else {
                     results.add(objectMapper.readValue(json, WorkflowModel.class));
                 }
@@ -528,6 +543,5 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
             log.error("Error reading workflow - " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
-
     }
 }
