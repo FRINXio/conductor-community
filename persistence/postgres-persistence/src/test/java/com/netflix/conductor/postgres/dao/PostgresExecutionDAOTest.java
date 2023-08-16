@@ -11,9 +11,16 @@
  */
 package com.netflix.conductor.postgres.dao;
 
-import com.netflix.conductor.postgres.FlywayTestDependencyConfiguration;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
+import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
+import com.netflix.conductor.dao.ExecutionDAO;
+import com.netflix.conductor.dao.ExecutionDAOTest;
+import com.netflix.conductor.model.WorkflowModel;
+import com.netflix.conductor.postgres.config.PostgresConfiguration;
+import java.util.List;
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,22 +31,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
-import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
-import com.netflix.conductor.dao.ExecutionDAO;
-import com.netflix.conductor.dao.ExecutionDAOTest;
-import com.netflix.conductor.model.WorkflowModel;
-import com.netflix.conductor.postgres.config.PostgresConfiguration;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @ContextConfiguration(
         classes = {
             TestObjectMapperConfiguration.class,
             PostgresConfiguration.class,
             FlywayAutoConfiguration.class,
-            FlywayTestDependencyConfiguration.class
         })
 @RunWith(SpringRunner.class)
 @SpringBootTest
