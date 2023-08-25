@@ -192,7 +192,11 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                 if (json == null || json.length == 0) {
                     return getWorkflowFallback(connection, workflowId);
                 }
-                return objectMapper.readValue(json, WorkflowModel.class);
+                var data = objectMapper.readValue(json, WorkflowModel.class);
+                if (!includeTasks) {
+                    data.setTasks(Collections.emptyList());
+                }
+                return data;
             }
         } catch (Exception e) {
             log.error("Error reading workflow - " + e.getMessage(), e);
