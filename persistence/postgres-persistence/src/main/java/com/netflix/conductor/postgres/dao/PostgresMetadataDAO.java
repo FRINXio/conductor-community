@@ -11,7 +11,11 @@
  */
 package com.netflix.conductor.postgres.dao;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -438,16 +442,22 @@ public class PostgresMetadataDAO extends PostgresBaseDAO implements MetadataDAO,
         updateLatestVersion(tx, def.getName(), maxVersion);
     }
 
-    /**
-     * Query persistence for all defined {@link TaskDef} data.
-     *
-     * @param tx The {@link Connection} to use for queries.
-     * @return A new {@code List<TaskDef>} with all the {@code TaskDef} data that was retrieved.
-     */
     private List<TaskDef> findAllTaskDefs(Connection tx) {
-        final String READ_ALL_TASKDEF_QUERY = "SELECT json_data FROM meta_task_def";
-
-        return query(tx, READ_ALL_TASKDEF_QUERY, q -> q.executeAndFetch(TaskDef.class));
+        final String READ_ALL_TASKDEF_QUERY =
+                "SELECT modified_on, json_data FROM meta_task_def";
+        List<TaskDef> taskDefs = new ArrayList<>();
+        try (PreparedStatement statement = tx.prepareStatement(READ_ALL_TASKDEF_QUERY)) {
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                var taskDef = objectMapper.readValue(rs.getString("json_data"), TaskDef.class);
+                taskDef.setUpdateTime(rs.getTimestamp("modified_on").getTime());
+                taskDefs.add(taskDef);
+            }
+        } catch (SQLException | IOException e) {
+            logger.warn("Unable to query task definitions", e);
+            throw new RuntimeException("Unable to query task definitions", e);
+        }
+        return taskDefs;
     }
 
     /**
