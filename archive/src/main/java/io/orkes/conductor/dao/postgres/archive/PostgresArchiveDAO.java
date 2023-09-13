@@ -529,10 +529,13 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                 String parentWfId = rs.getString("parent_workflow_id");
                 String status = rs.getString("status");
                 String json = summaryOnly ? "" : rs.getString("json_data");
+                Boolean completedWithErrors = false;
                 if (com.google.common.base.Strings.isNullOrEmpty(json)) {
-                    Boolean completedWithErrors = rs.getBoolean("completed_with_errors");
-                    if (rs.wasNull()) {
-                        completedWithErrors = null;
+                    if (summaryOnly) {
+                        completedWithErrors = rs.getBoolean("completed_with_errors");
+                        if (rs.wasNull()) {
+                            completedWithErrors = null;
+                        }
                     }
                     results.add(new WorkflowModelSummary(wfId, parentWfId, status,  completedWithErrors));
                 } else {
