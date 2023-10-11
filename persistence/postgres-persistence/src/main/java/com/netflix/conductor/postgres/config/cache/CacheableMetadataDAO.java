@@ -89,4 +89,9 @@ public class CacheableMetadataDAO implements MetadataDAO {
     public List<WorkflowDef> getAllWorkflowDefs() {
         return delegate.getAllWorkflowDefs();
     }
+
+    @Override
+    public List<WorkflowDef> getAllWorkflowDefsLatestVersions() {
+        return delegate.getAllWorkflowDefsLatestVersions();
+    }
 }
