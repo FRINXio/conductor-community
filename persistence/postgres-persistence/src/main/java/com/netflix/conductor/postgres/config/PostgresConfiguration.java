@@ -70,7 +70,7 @@ public class PostgresConfiguration {
     public PostgresMetadataDAO postgresMetadataDAO(
             @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
             ObjectMapper objectMapper) {
-        return new PostgresMetadataDAO(retryTemplate, objectMapper, dataSource);
+        return new PostgresMetadataDAO(retryTemplate, objectMapper, dataSource, properties);
     }
 
     @Bean
