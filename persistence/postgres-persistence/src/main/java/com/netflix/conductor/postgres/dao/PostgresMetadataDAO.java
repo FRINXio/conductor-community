@@ -506,6 +506,32 @@ public class PostgresMetadataDAO extends PostgresBaseDAO implements MetadataDAO,
     }
 
     /**
+     * Query persistence for all defined {@link TaskDef} data, and cache it in {@link
+     * #taskDefCache}.
+     */
+    private void refreshTaskDefs() {
+        try {
+            withTransaction(
+                    tx -> {
+                        Map<String, TaskDef> map = new HashMap<>();
+                        findAllTaskDefs(tx).forEach(taskDef -> map.put(taskDef.getName(), taskDef));
+
+                        synchronized (taskDefCache) {
+                            taskDefCache.clear();
+                            taskDefCache.putAll(map);
+                        }
+
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Refreshed {} TaskDefs", taskDefCache.size());
+                        }
+                    });
+        } catch (Exception e) {
+            Monitors.error(CLASS_NAME, "refreshTaskDefs");
+            logger.error("refresh TaskDefs failed ", e);
+        }
+    }
+
+    /**
      * Explicitly retrieves a {@link TaskDef} from persistence.
      *
      * @param name The name of the {@code TaskDef} to query for.
