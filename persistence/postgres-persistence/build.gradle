@@ -1,8 +1,8 @@
 dependencies {
 
-    implementation project(':conductor-community:persistence:common-persistence')
-    implementation project(":conductor-common")
     implementation project(":conductor-core")
+    implementation project(":conductor-common")
+    implementation project(':conductor-community:persistence:common-persistence')
 
     compileOnly 'org.springframework.boot:spring-boot-starter'
     compileOnly 'org.springframework.retry:spring-retry'
