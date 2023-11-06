@@ -122,22 +122,31 @@ public class ArchivedIndexDAO implements IndexDAO {
         return CompletableFuture.completedFuture(null);
     }
 
+    // Not supported in archive
     @Override
     public void removeTask(String workflowId, String taskId) {
+        throw new UnsupportedOperationException("removeTask is not supported in archive indexing");
     }
 
+    // Not supported in archive
     @Override
     public CompletableFuture<Void> asyncRemoveTask(String workflowId, String taskId) {
-        return null;
+        log.info("asyncRemoveTask is not supported in archive indexing");
+        return CompletableFuture.completedFuture(null);
     }
 
+    // Not supported in archive
     @Override
     public void updateTask(String workflowId, String taskId, String[] keys, Object[] values) {
+        throw new UnsupportedOperationException("updateTask is not supported in archive indexing");
     }
 
+    // Not supported in archive
     @Override
-    public CompletableFuture<Void> asyncUpdateTask(String workflowId, String taskId, String[] keys, Object[] values) {
-        return null;
+    public CompletableFuture<Void> asyncUpdateTask(
+            String workflowId, String taskId, String[] keys, Object[] values) {
+        log.info("asyncUpdateTask is not supported in archive indexing");
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
