@@ -35,7 +35,8 @@ public class PostgresProperties {
 
     private Integer deadlockRetryMax = 3;
 
-    public String schema = "public";
+    @Value("${conductor.datasource.schema:public}")
+    public String schema;
 
     public Duration getTaskDefCacheRefreshInterval() {
         return taskDefCacheRefreshInterval;
