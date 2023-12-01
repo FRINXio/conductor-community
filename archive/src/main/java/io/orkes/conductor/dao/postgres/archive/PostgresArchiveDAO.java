@@ -329,13 +329,11 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
             endTime = System.currentTimeMillis();
         }
 
-        boolean search = false;
-
         // Task specific
         List<String> taskIds = query.getTaskIds();
         List<String> taskTypes = query.getTaskTypes();
 
-        String WHERE_CLAUSE = "from  " + tableName + " archive ";
+        String WHERE_CLAUSE = "from  " + tableName;
 
         WHERE_CLAUSE += " WHERE 1=1 ";
 
@@ -343,7 +341,7 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
         String JOINER = " AND ";
         if (workflowNames != null && !workflowNames.isEmpty()) {
-            WHERE_CLAUSE += JOINER + "archive.workflow_name LIKE ANY (?) ";
+            WHERE_CLAUSE += JOINER + "workflow_name LIKE ANY (?) ";
         }
 
         if (taskTypes != null && !taskTypes.isEmpty()) {
@@ -376,7 +374,6 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
         }
 
         if (Strings.isNotBlank(freeText) && !"*".equals(freeText)) {
-            search = true;
             WHERE_CLAUSE += JOINER + " index_data @> ? ";
         }
 
@@ -388,18 +385,6 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                         + limit
                         + " offset "
                         + start;
-        if (search) {
-            SEARCH_QUERY =
-                    "select a.workflow_id, a.created_on from ("
-                            + SELECT_QUERY
-                            + " "
-                            + WHERE_CLAUSE
-                            + " limit 2000000 offset 0) a order by a.created_on desc limit "
-                            + limit
-                            + " offset "
-                            + start;
-        }
-
         log.debug(SEARCH_QUERY);
 
         SearchResult<String> result = new SearchResult<>();
