@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @ContextConfiguration(
         classes = {
@@ -49,31 +49,31 @@ public class PostgresLockDAOTest {
     @Test
     public void testAcquireLock() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
     }
 
     @Test
     public void testAcquireLockTwice() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         acquiredLock = lockDAO.acquireLock("testLock", 2500, TimeUnit.MILLISECONDS);
-        assertEquals(false, acquiredLock);
+        assertFalse(acquiredLock);
     }
 
     @Test
     public void testAcquireLockTwiceWithDifferentLockNames() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         acquiredLock = lockDAO.acquireLock("testLock2", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
     }
 
     @Test
     public void testReentrantLockWithLessReleasesThanAcquires() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
 
         assertEquals(2, lockDAO.scheduledFutures().get("testLock").size());
 
@@ -85,9 +85,9 @@ public class PostgresLockDAOTest {
     @Test
     public void testReentrantLock() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
 
         assertEquals(2, lockDAO.scheduledFutures().get("testLock").size());
 
@@ -100,7 +100,7 @@ public class PostgresLockDAOTest {
     @Test
     public void testReleaseLock() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         lockDAO.releaseLock("testLock");
         assertEquals(0, lockDAO.scheduledFutures().get("testLock").size());
     }
@@ -108,7 +108,7 @@ public class PostgresLockDAOTest {
     @Test
     public void testReleaseLockTwice() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         lockDAO.releaseLock("testLock");
         lockDAO.releaseLock("testLock");
         assertEquals(0, lockDAO.scheduledFutures().get("testLock").size());
@@ -117,7 +117,7 @@ public class PostgresLockDAOTest {
     @Test
     public void testDeleteLock() {
         boolean acquiredLock = lockDAO.acquireLock("testLock", 5000, TimeUnit.MILLISECONDS);
-        assertEquals(true, acquiredLock);
+        assertTrue(acquiredLock);
         lockDAO.deleteLock("testLock");
         assertEquals(0, lockDAO.scheduledFutures().get("testLock").size());
     }
