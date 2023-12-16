@@ -19,8 +19,11 @@ import javax.sql.DataSource;
 
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.postgres.config.outbox.OutboxExecutionDAO;
+import com.netflix.conductor.postgres.dao.PostgresLockDAO;
+import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,6 +58,15 @@ public class PostgresConfiguration {
         this.dataSource = dataSource;
         this.properties = properties;
     }
+
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @Bean(initMethod = "migrate")
     @PostConstruct
