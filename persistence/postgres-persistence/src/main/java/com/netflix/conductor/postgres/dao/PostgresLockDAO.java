@@ -1,12 +1,9 @@
 package com.netflix.conductor.postgres.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.conductor.annotations.VisibleForTesting;
 import com.netflix.conductor.core.sync.Lock;
 import com.netflix.conductor.postgres.util.Query;
-import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.support.RetryTemplate;
 
 import javax.sql.DataSource;
@@ -14,7 +11,6 @@ import java.util.Queue;
 import java.util.concurrent.*;
 
 public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresLockDAO.class);
     private static final ConcurrentHashMap<String, Queue<ScheduledFuture<?>>> SCHEDULEDFUTURES =
             new ConcurrentHashMap<>();
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("PostgresLock-scheduler");
@@ -60,6 +56,7 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
         if (lockAcquired) {
             if (!SCHEDULEDFUTURES.containsKey(lockId)) {
                 SCHEDULEDFUTURES.put(lockId, new ConcurrentLinkedQueue<>());
+                SCHEDULEDFUTURES.get(lockId).add(SCHEDULER.schedule(() -> releaseLock(lockId), leaseTime, unit));
             } else {
                 Queue<ScheduledFuture<?>> scheduledFutures = SCHEDULEDFUTURES.get(lockId);
                 scheduledFutures.add(SCHEDULER.schedule(() -> releaseLock(lockId), leaseTime, unit));
@@ -88,6 +85,8 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
             if ((scheduledFuture = scheduledFutures.poll()) != null) {
                 scheduledFuture.cancel(false);
             }
+        } else {
+            logger.warn("Lock {} does not exist", lockId);
         }
     }
 
@@ -104,5 +103,10 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
             hash = (hash * 33) ^ str.charAt(i);
         }
         return hash >>> 0;
+    }
+
+    @VisibleForTesting
+    ConcurrentHashMap<String, Queue<ScheduledFuture<?>>> scheduledFutures() {
+        return SCHEDULEDFUTURES;
     }
 }

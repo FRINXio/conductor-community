@@ -14,7 +14,7 @@ BEGIN
         lock_acquired := pg_try_advisory_lock(lock_id);
 
         -- While the lock is not acquired and the timeout has not expired
-        WHILE NOT lock_acquired AND start_time + INTERVAL time_to_try || ' ' || unit > NOW() LOOP
+        WHILE NOT lock_acquired AND start_time + INTERVAL time_to_try || ' ' || unit < NOW() LOOP
           -- Sleep for 0.5 seconds (500 milliseconds)
           PERFORM pg_sleep(0.5);
 
