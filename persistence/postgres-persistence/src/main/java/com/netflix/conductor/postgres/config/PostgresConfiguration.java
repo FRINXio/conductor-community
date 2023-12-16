@@ -106,6 +106,19 @@ public class PostgresConfiguration {
         return retryTemplate;
     }
 
+    @Bean
+    public PostgresLockDAO postgresLockDAO(
+            @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
+            ObjectMapper objectMapper) {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl(dbUrl);
+        ds.setUsername(dbUsername);
+        ds.setPassword(dbPassword);
+        ds.setAutoCommit(false);
+        ds.setMaximumPoolSize(1);
+        return new PostgresLockDAO(retryTemplate, objectMapper, ds);
+    }
+
     public static class CustomRetryPolicy extends SimpleRetryPolicy {
 
         private static final String ER_LOCK_DEADLOCK = "40P01";

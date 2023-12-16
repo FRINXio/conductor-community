@@ -2,124 +2,93 @@ package com.netflix.conductor.postgres.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.core.sync.Lock;
-import com.netflix.conductor.model.TaskModel;
 import com.netflix.conductor.postgres.util.Query;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.support.RetryTemplate;
 
 import javax.sql.DataSource;
+import java.util.Queue;
 import java.util.concurrent.*;
 
 public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgresLockDAO.class);
-    private static final ConcurrentHashMap<String, ScheduledFuture<?>> SCHEDULEDFUTURES =
+    private static final ConcurrentHashMap<String, Queue<ScheduledFuture<?>>> SCHEDULEDFUTURES =
             new ConcurrentHashMap<>();
     private static final ThreadGroup THREAD_GROUP = new ThreadGroup("PostgresLock-scheduler");
     private static final ThreadFactory THREAD_FACTORY =
             runnable -> new Thread(THREAD_GROUP, runnable);
     private static final ScheduledExecutorService SCHEDULER =
             Executors.newScheduledThreadPool(1, THREAD_FACTORY);
-    protected PostgresLockDAO(RetryTemplate retryTemplate, ObjectMapper objectMapper, DataSource dataSource) {
+    private static final long DEFAULT_LEASE_TIME = 5000;
+    private static final long DEFAULT_TIME_TO_TRY = 500;
+
+    public PostgresLockDAO(RetryTemplate retryTemplate, ObjectMapper objectMapper, DataSource dataSource){
         super(retryTemplate, objectMapper, dataSource);
+
+        logger.debug(PostgresLockDAO.class.getName() + " is ready to serve");
     }
 
     @Override
     public void acquireLock(String lockId) {
-        LOGGER.trace("Acquiring lock {}", lockId);
-        // create code for acquiring advisory lock in postgres
-        final String ADVISORY_LOCK = "SELECT pg_advisory_lock (?)";
-
-        // execute the query
-        queryWithTransaction(ADVISORY_LOCK, (q) -> {
-            q.addParameter(lockId);
-            q.executeQuery();
-
-            return q;
-        });
+        acquireLock(lockId, DEFAULT_TIME_TO_TRY, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public boolean acquireLock(String lockId, long timeToTry, TimeUnit unit) {
-        final String TRY_ADVISORY_LOCK =
-                "DECLARE\n" +
-                        "  lock_acquired boolean;\n" +
-                        "  start_time timestamp;\n" +
-                        "BEGIN\n" +
-                        "  start_time := now();\n" +
-                        "\n" +
-                        "  lock_acquired := pg_try_advisory_lock(?);\n" +
-                        "\n" +
-                        "WHILE NOT lock_acquired AND start_time + INTERVAL '? ?' < now() LOOP\n" +
-                        "  PERFORM pg_sleep(0.5);\n" +
-                        "  lock_acquired := pg_try_advisory_lock(?);\n" +
-                        "END LOOP;\n" +
-                        "\n" +
-                        "SELECT lock_acquired;\n" +
-                        "\n" +
-                        "END;";
-
-        Query query = queryWithTransaction(TRY_ADVISORY_LOCK, (q) -> {
-            q.addParameter(lockId);
-            q.addParameter(timeToTry);
-            q.addParameter(unit.toString());
-            q.addParameter(lockId);
-
-            return q;
-        });
-
-        return query.executeAndFetchFirst(Boolean.class);
+        return acquireLock(lockId, timeToTry, DEFAULT_LEASE_TIME, unit);
     }
 
     @Override
     public boolean acquireLock(String lockId, long timeToTry, long leaseTime, TimeUnit unit) {
-        final String TRY_ADVISORY_LOCK =
-                "DECLARE\n" +
-                        "  lock_acquired boolean;\n" +
-                        "  start_time timestamp;\n" +
-                        "BEGIN\n" +
-                        "  start_time := now();\n" +
-                        "\n" +
-                        "  lock_acquired := pg_try_advisory_lock(?);\n" +
-                        "\n" +
-                        "WHILE NOT lock_acquired AND start_time + INTERVAL '? ?' < now() LOOP\n" +
-                        "  PERFORM pg_sleep(0.5);\n" +
-                        "  lock_acquired := pg_try_advisory_lock(?);\n" +
-                        "END LOOP;\n" +
-                        "\n" +
-                        "SELECT lock_acquired;\n" +
-                        "\n" +
-                        "END;";
+        final String TRY_ADVISORY_LOCK = "CALL acquire_advisory_lock(?, ?, ?)";
+        int hashedLockId = hashStringToInt(lockId);
 
         Query query = queryWithTransaction(TRY_ADVISORY_LOCK, (q) -> {
-            q.addParameter(lockId);
+            q.addParameter(hashedLockId);
             q.addParameter(timeToTry);
             q.addParameter(unit.toString());
-            q.addParameter(lockId);
             q.executeQuery();
 
             return q;
         });
 
-        SCHEDULEDFUTURES.put(
-                lockId, SCHEDULER.schedule(() -> deleteLock(lockId), leaseTime, unit)
-        );
+        boolean lockAcquired = query.executeAndFetchFirst(Boolean.class);
 
-        return query.executeAndFetchFirst(Boolean.class);
+        if (lockAcquired) {
+            if (!SCHEDULEDFUTURES.containsKey(lockId)) {
+                SCHEDULEDFUTURES.put(lockId, new ConcurrentLinkedQueue<>());
+            } else {
+                Queue<ScheduledFuture<?>> scheduledFutures = SCHEDULEDFUTURES.get(lockId);
+                scheduledFutures.add(SCHEDULER.schedule(() -> releaseLock(lockId), leaseTime, unit));
+            }
+        }
+
+        return lockAcquired;
     }
 
     @Override
     public void releaseLock(String lockId) {
         final String ADVISORY_UNLOCK = "SELECT pg_advisory_unlock (?)";
+        int hashedLockId = hashStringToInt(lockId);
 
         queryWithTransaction(ADVISORY_UNLOCK, (q) -> {
-            q.addParameter(lockId);
+            q.addParameter(hashedLockId);
             q.executeQuery();
 
             return q;
         });
 
-        SCHEDULEDFUTURES.remove(lockId);
+        if (SCHEDULEDFUTURES.containsKey(lockId)) {
+            Queue<ScheduledFuture<?>> scheduledFutures = SCHEDULEDFUTURES.get(lockId);
+            ScheduledFuture<?> scheduledFuture;
+
+            if ((scheduledFuture = scheduledFutures.poll()) != null) {
+                scheduledFuture.cancel(false);
+            }
+        }
     }
 
     @Override
@@ -127,4 +96,13 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
         releaseLock(lockId);
     }
 
+    private int hashStringToInt(String str) {
+        int hash = 5381;
+        int i = -1;
+        while (i < str.length() - 1) {
+            i += 1;
+            hash = (hash * 33) ^ str.charAt(i);
+        }
+        return hash >>> 0;
+    }
 }
