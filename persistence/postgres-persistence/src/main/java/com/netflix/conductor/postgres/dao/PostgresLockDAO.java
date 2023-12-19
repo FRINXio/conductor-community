@@ -1,9 +1,22 @@
+/*
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.netflix.conductor.postgres.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.annotations.VisibleForTesting;
 import com.netflix.conductor.core.sync.Lock;
+import com.netflix.conductor.postgres.config.PostgresProperties;
 import com.netflix.conductor.postgres.util.Query;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.support.RetryTemplate;
 
 import javax.sql.DataSource;
@@ -18,11 +31,15 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
             runnable -> new Thread(THREAD_GROUP, runnable);
     private static final ScheduledExecutorService SCHEDULER =
             Executors.newScheduledThreadPool(1, THREAD_FACTORY);
-    private static final long DEFAULT_LEASE_TIME = 5000;
-    private static final long DEFAULT_TIME_TO_TRY = 500;
 
-    public PostgresLockDAO(RetryTemplate retryTemplate, ObjectMapper objectMapper, DataSource dataSource){
+    private long DEFAULT_LEASE_TIME;
+    private long DEFAULT_TIME_TO_TRY;
+
+    public PostgresLockDAO(RetryTemplate retryTemplate, ObjectMapper objectMapper, DataSource dataSource, PostgresProperties properties){
         super(retryTemplate, objectMapper, dataSource);
+
+        this.DEFAULT_LEASE_TIME = properties.getDefaultLeaseTime();
+        this.DEFAULT_TIME_TO_TRY = properties.getDefaultTimeToTry();
 
         logger.debug(PostgresLockDAO.class.getName() + " is ready to serve");
     }
@@ -40,7 +57,7 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
     @Override
     public boolean acquireLock(String lockId, long timeToTry, long leaseTime, TimeUnit unit) {
         final String TRY_ADVISORY_LOCK = "CALL acquire_advisory_lock(?, ?, ?)";
-        int hashedLockId = hashStringToInt(lockId);
+        long hashedLockId = stringToHashLong(lockId);
 
         Query query = queryWithTransaction(TRY_ADVISORY_LOCK, (q) -> {
             q.addParameter(hashedLockId);
@@ -69,7 +86,7 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
     @Override
     public void releaseLock(String lockId) {
         final String ADVISORY_UNLOCK = "SELECT pg_advisory_unlock (?)";
-        int hashedLockId = hashStringToInt(lockId);
+        long hashedLockId = stringToHashLong(lockId);
 
         queryWithTransaction(ADVISORY_UNLOCK, (q) -> {
             q.addParameter(hashedLockId);
@@ -95,14 +112,8 @@ public class PostgresLockDAO extends PostgresBaseDAO implements Lock {
         releaseLock(lockId);
     }
 
-    private int hashStringToInt(String str) {
-        int hash = 5381;
-        int i = -1;
-        while (i < str.length() - 1) {
-            i += 1;
-            hash = (hash * 33) ^ str.charAt(i);
-        }
-        return hash >>> 0;
+    private Long stringToHashLong(String string) {
+        return (long) string.hashCode() + Integer.MAX_VALUE;
     }
 
     @VisibleForTesting

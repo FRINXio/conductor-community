@@ -23,6 +23,21 @@ public class PostgresProperties {
     @Value("${conductor.outbox.table.enabled:false}")
     private boolean outboxEnabled;
 
+    @Value("${spring.postgreslock.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.postgreslock.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.postgreslock.datasource.password}")
+    private String dbPassword;
+
+    @Value("${spring.postgreslock.datasource.leaseTime}")
+    private long DEFAULT_LEASE_TIME;
+
+    @Value("${spring.postgreslock.datasource.timeToTry}")
+    private long DEFAULT_TIME_TO_TRY;
+
     /** The time in seconds after which the in-memory task definitions cache will be invalidated */
     @DurationUnit(ChronoUnit.SECONDS)
     private Duration taskDefCacheRefreshInterval = Duration.ofSeconds(60);
@@ -78,4 +93,24 @@ public class PostgresProperties {
     }
 
     public boolean isOutboxEnabled() { return outboxEnabled; }
+
+    public String getLockDbUrl() {
+        return dbUrl;
+    }
+
+    public String getLockDbUsername() {
+        return dbUsername;
+    }
+
+    public String getLockDbPassword() {
+        return dbPassword;
+    }
+
+    public long getDefaultLeaseTime() {
+        return DEFAULT_LEASE_TIME;
+    }
+
+    public long getDefaultTimeToTry() {
+        return DEFAULT_TIME_TO_TRY;
+    }
 }

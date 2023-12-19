@@ -59,15 +59,6 @@ public class PostgresConfiguration {
         this.properties = properties;
     }
 
-    @Value("${spring.datasource.url}")
-    private String dbUrl;
-
-    @Value("${spring.datasource.username}")
-    private String dbUsername;
-
-    @Value("${spring.datasource.password}")
-    private String dbPassword;
-
     @Bean(initMethod = "migrate")
     @PostConstruct
     public Flyway flywayForPrimaryDb() {
@@ -118,17 +109,19 @@ public class PostgresConfiguration {
         return retryTemplate;
     }
 
+    public DataSource createLockDataSource() {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl(properties.getLockDbUrl());
+        ds.setUsername(properties.getLockDbUsername());
+        ds.setPassword(properties.getLockDbPassword());
+        return ds;
+    }
+
     @Bean
     public PostgresLockDAO postgresLockDAO(
             @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
-            ObjectMapper objectMapper) {
-        HikariDataSource ds = new HikariDataSource();
-        ds.setJdbcUrl(dbUrl);
-        ds.setUsername(dbUsername);
-        ds.setPassword(dbPassword);
-        ds.setAutoCommit(false);
-        ds.setMaximumPoolSize(1);
-        return new PostgresLockDAO(retryTemplate, objectMapper, ds);
+            ObjectMapper objectMapper, DataSource ds) {
+        return new PostgresLockDAO(retryTemplate, objectMapper, ds, properties);
     }
 
     public static class CustomRetryPolicy extends SimpleRetryPolicy {
