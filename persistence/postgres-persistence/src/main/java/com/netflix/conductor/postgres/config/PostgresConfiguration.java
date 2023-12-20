@@ -109,6 +109,7 @@ public class PostgresConfiguration {
         return retryTemplate;
     }
 
+    @Bean
     public DataSource createLockDataSource() {
         HikariDataSource ds = new HikariDataSource();
         ds.setJdbcUrl(properties.getLockDbUrl());
@@ -120,7 +121,7 @@ public class PostgresConfiguration {
     @Bean
     public PostgresLockDAO postgresLockDAO(
             @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
-            ObjectMapper objectMapper, DataSource ds) {
+            ObjectMapper objectMapper, @Qualifier("createLockDataSource") DataSource ds) {
         return new PostgresLockDAO(retryTemplate, objectMapper, ds, properties);
     }
 
