@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.netflix.conductor.common.utils.ExternalPayloadStorage;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * REST controller for pulling payload stream of data by key (externalPayloadPath) from PostgreSQL
@@ -47,6 +50,10 @@ public class ExternalPostgresPayloadResource {
     @Operation(
             summary =
                     "Get task or workflow by externalPayloadPath from External PostgreSQL Storage")
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = {@Content(mediaType = "application/json", schema = @Schema(type = "object"))})
     public ResponseEntity<InputStreamResource> getExternalStorageData(
             @PathVariable("externalPayloadPath") String externalPayloadPath) {
         InputStream inputStream = postgresService.download(externalPayloadPath);
