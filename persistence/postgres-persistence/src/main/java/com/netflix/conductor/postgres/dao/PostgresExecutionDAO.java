@@ -547,6 +547,21 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
     }
 
     @Override
+    public List<String> getLabels(String wfId) {
+        return null;
+    }
+
+    @Override
+    public List<String> getTaskDescription(String taskType) {
+        return null;
+    }
+
+    @Override
+    public List<String> getUserIds(List<String> groupsAndRoles, List<String> wfIds) {
+        return null;
+    }
+
+    @Override
     public void updateEventExecution(EventExecution eventExecution) {
         try {
             withTransaction(tx -> updateEventExecution(tx, eventExecution));

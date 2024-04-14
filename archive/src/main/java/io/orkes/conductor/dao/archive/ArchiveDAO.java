@@ -15,6 +15,7 @@ package io.orkes.conductor.dao.archive;
 import java.util.List;
 
 import com.netflix.conductor.common.metadata.tasks.TaskExecLog;
+import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.model.WorkflowModel;
 
 public interface ArchiveDAO {
@@ -42,4 +43,10 @@ public interface ArchiveDAO {
     void addTaskExecutionLogs(List<TaskExecLog> logs);
 
     List<WorkflowModel> getWorkflowFamily(String workflowId, boolean summaryOnly);
+
+    List<String> getAllLabels(String wfId);
+
+    List<String> getTaskDescription(String taskType);
+
+    SearchResult<String> getUserWorkflowIds(List<String> groupsAndRoles, List<String> wfIds);
 }

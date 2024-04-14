@@ -308,6 +308,21 @@ public class OutboxExecutionDAO extends PostgresBaseDAO implements ExecutionDAO,
     }
 
     @Override
+    public List<String> getLabels(String wfId) {
+        return null;
+    }
+
+    @Override
+    public List<String> getTaskDescription(String taskType) {
+        return null;
+    }
+
+    @Override
+    public List<String> getUserIds(List<String> groupsAndRoles, List<String> wfIds) {
+        return null;
+    }
+
+    @Override
     public boolean exceedsRateLimitPerFrequency(TaskModel task, TaskDef taskDef) {
         return ((RateLimitingDAO) delegate).exceedsRateLimitPerFrequency(task, taskDef);
     }

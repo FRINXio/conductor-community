@@ -337,6 +337,21 @@ public class ArchivedExecutionDAO implements ExecutionDAO {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> getLabels(String wfId) {
+        return archiveDAO.getAllLabels(wfId);
+    }
+
+    @Override
+    public List<String> getTaskDescription(String taskType) {
+        return archiveDAO.getTaskDescription(taskType);
+    }
+
+    @Override
+    public List<String> getUserIds(List<String> groupsAndRoles, List<String> wfIds) {
+        return archiveDAO.getUserWorkflowIds(groupsAndRoles, wfIds).getResults();
+    }
+
     private WorkflowModel loadWorkflowFromPrimary(WorkflowModel wf) {
         log.debug("Unable to load workflow: {} from archive, loading from primary", wf.getWorkflowId());
         return primaryDAO.getWorkflow(wf.getWorkflowId());

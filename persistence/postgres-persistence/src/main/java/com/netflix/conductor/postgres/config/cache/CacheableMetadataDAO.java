@@ -17,7 +17,7 @@ import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
 import com.netflix.conductor.dao.MetadataDAO;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.cache.CacheManager;
+import com.netflix.conductor.common.metadata.BaseDef;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -93,5 +93,20 @@ public class CacheableMetadataDAO implements MetadataDAO {
     @Override
     public List<WorkflowDef> getAllWorkflowDefsLatestVersions() {
         return delegate.getAllWorkflowDefsLatestVersions();
+    }
+
+    @Override
+    public List<String> getDescription(BaseDef def) {
+        return delegate.getDescription(def);
+    }
+
+    @Override
+    public List<WorkflowDef> getUserWorkflowDefs(List<String> groupsAndRoles) {
+        return delegate.getUserWorkflowDefs(groupsAndRoles);
+    }
+
+    @Override
+    public List<TaskDef> getUserTaskDefs(List<String> groupsAndRoles) {
+        return delegate.getUserTaskDefs(groupsAndRoles);
     }
 }

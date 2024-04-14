@@ -12,6 +12,8 @@
  */
 package io.orkes.conductor.dao.postgres.archive;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.common.metadata.tasks.TaskExecLog;
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
@@ -28,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -112,9 +115,9 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
                 "INSERT INTO "
                         + "archive.workflow_archive"
                         + " as wf"
-                        + "(workflow_id, created_on, modified_on, correlation_id, workflow_name, status, index_data, created_by, json_data, parent_workflow_id) "
+                        + "(workflow_id, created_on, modified_on, correlation_id, workflow_name, status, index_data, created_by, json_data, parent_workflow_id, rbac_labels) "
                         + "VALUES "
-                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  "
+                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  "
                         + "ON CONFLICT (workflow_id) DO "
                         + "UPDATE SET modified_on = ?, status = ?, index_data = ?, json_data = ? "
                         + "WHERE wf.modified_on < ? ;";
@@ -147,6 +150,8 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
             }
             statement.setString(indx++, workflowJson);
             statement.setString(indx++, workflow.getParentWorkflowId() == null ? null : workflow.getParentWorkflowId());
+            statement.setArray(indx++, connection.createArrayOf(
+                    "text", getLabels(workflow.getWorkflowDefinition().getDescription())));
 
             // Update values
             statement.setLong(indx++, updatedTime);
@@ -533,6 +538,110 @@ public class PostgresArchiveDAO extends PostgresBaseDAO implements ArchiveDAO, D
 
         } catch (Exception e) {
             log.error("Error reading workflow - " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String[] getLabels(String description) {
+        if (description == null || description.isEmpty()) {
+            return new String[0];
+        }
+        try {
+            JsonNode jsonDescription = objectMapper.readTree(description);
+            JsonNode labels = jsonDescription.get("labels");
+
+            if (labels != null && labels.isArray()) {
+                String[] labelsArray = new String[labels.size()];
+                for (int i = 0; i < labels.size(); i++) {
+                    labelsArray[i] = labels.get(i).asText();
+                }
+                return labelsArray;
+            }
+        } catch (JsonProcessingException e) {
+            log.error("Unable to get labels from {}", description, e);
+
+        }
+        return new String[0];
+    }
+
+    @Override
+    public List<String> getAllLabels(String wfId) {
+        final String GET_LABELS =
+                "SELECT rbac_labels FROM archive.workflow_archive WHERE workflow_id=?";
+
+        if (wfId != null && !wfId.isEmpty()) {
+            try (Connection connection = searchDatasource.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(GET_LABELS);
+                statement.setString(1, wfId);
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    String[] array = (String[]) rs.getArray(1).getArray();
+                    if (array != null) {
+                        return Arrays.stream(array)
+                                .map(String::toLowerCase)
+                                .toList();
+                    }
+                }
+            } catch (SQLException e) {
+                log.error("Unable to get rbac labels with workflow id {}", wfId, e);
+                throw new RuntimeException(e);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getTaskDescription(String taskType) {
+
+        // Needed for RBAC - since we do not store task def meta in archive table
+        // and data cannot be obtained via id, this way of getting data is more
+        // convenient than implementing MetadataDAO directly or getting whole workflow def
+
+        final String GET_TASK_DEF = "SELECT json_data FROM meta_task_def WHERE name=?";
+
+        if (taskType != null && !taskType.isEmpty()) {
+            try (Connection connection = searchDatasource.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(GET_TASK_DEF);
+                statement.setString(1, taskType);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    String[] labels = getLabels(resultSet.getString(1));
+                    return Arrays.asList(labels);
+                }
+            } catch (SQLException e) {
+                log.error("Unable to get description of task {}", taskType, e);
+                throw new RuntimeException(e);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public SearchResult<String> getUserWorkflowIds(List<String> groupsAndRoles, List<String> wfIds) {
+        final String GET_USER_WORKFLOWS = "SELECT " +
+                "workflow_id FROM archive.workflow_archive " +
+                "WHERE rbac_labels && ARRAY[?]::text[]";
+
+        try (Connection connection = searchDatasource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(GET_USER_WORKFLOWS);
+            String[] labels = groupsAndRoles.toArray(new String[0]);
+            statement.setArray(1, connection.createArrayOf("text", labels));
+            ResultSet rs = statement.executeQuery();
+            List<String> ids = new ArrayList<>();
+            while (rs.next()) {
+                ids.add(rs.getString(1));
+            }
+            SearchResult<String> userIds = new SearchResult<>();
+            if (wfIds != null) {
+                userIds.setResults(ids.stream()
+                        .filter(wfIds::contains)
+                        .toList());
+                return userIds;
+            }
+            userIds.setResults(ids);
+            return userIds;
+        } catch (SQLException e) {
+            log.error("Unable to get workflow ids accessible by user", e);
             throw new RuntimeException(e);
         }
     }

@@ -15,13 +15,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 
 import com.netflix.conductor.postgres.storage.PostgresPayloadStorage;
+import com.netflix.conductor.rest.rbac.HeaderValidatorFilter;
+import com.netflix.conductor.rest.rbac.RbacProperties;
+import com.netflix.conductor.rest.rbac.UserType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,10 +40,15 @@ public class ExternalPostgresPayloadResourceTest {
     private PostgresPayloadStorage mockPayloadStorage;
     private ExternalPostgresPayloadResource postgresResource;
 
+    @Mock RbacProperties properties;
+
     @Before
     public void before() {
         this.mockPayloadStorage = mock(PostgresPayloadStorage.class);
         this.postgresResource = new ExternalPostgresPayloadResource(this.mockPayloadStorage);
+        this.properties = mock(RbacProperties.class);
+        this.postgresResource.filter = new HeaderValidatorFilter(properties);
+        this.postgresResource.filter.setUser(new UserType(new ArrayList<>(List.of("admin")), true));
     }
 
     @Test

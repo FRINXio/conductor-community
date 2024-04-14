@@ -13,9 +13,12 @@ package com.netflix.conductor.postgres.controller;
 
 import java.io.InputStream;
 
+import com.netflix.conductor.rest.rbac.HeaderValidatorFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.web.client.HttpServerErrorException;
 
 /**
  * REST controller for pulling payload stream of data by key (externalPayloadPath) from PostgreSQL
@@ -46,6 +50,9 @@ public class ExternalPostgresPayloadResource {
         this.postgresService = postgresService;
     }
 
+    @Autowired
+    HeaderValidatorFilter filter;
+
     @GetMapping("/{externalPayloadPath}")
     @Operation(
             summary =
@@ -58,6 +65,9 @@ public class ExternalPostgresPayloadResource {
             @PathVariable("externalPayloadPath") String externalPayloadPath) {
         InputStream inputStream = postgresService.download(externalPayloadPath);
         InputStreamResource outputStreamBody = new InputStreamResource(inputStream);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(outputStreamBody);
+        if (filter.getUser().isAdmin()) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(outputStreamBody);
+        }
+        throw new HttpServerErrorException(HttpStatus.UNAUTHORIZED);
     }
 }

@@ -21,10 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.netflix.conductor.common.metadata.BaseDef;
 import org.springframework.retry.support.RetryTemplate;
 
 import com.netflix.conductor.common.metadata.events.EventHandler;
@@ -574,5 +578,60 @@ public class PostgresMetadataDAO extends PostgresBaseDAO implements MetadataDAO,
 
                     return taskDef.getName();
                 });
+    }
+
+    @Override
+    public List<String> getDescription(BaseDef definition) {
+        String description;
+
+        if (definition instanceof WorkflowDef) {
+            description = ((WorkflowDef) definition).getDescription();
+        } else if (definition instanceof TaskDef) {
+            description = ((TaskDef) definition).getDescription();
+        } else {
+            return Collections.emptyList();
+        }
+
+        if (description != null && description.contains("labels")) {
+            try {
+                JsonNode json = objectMapper.readTree(description).get("labels");
+                return StreamSupport.stream(json.spliterator(), false)
+                        .map(JsonNode::asText)
+                        .map(String::toLowerCase)
+                        .toList();
+            } catch (JsonProcessingException e) {
+                logger.error("Unable to parse labels from description: {}", description);
+                throw new RuntimeException(e);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<WorkflowDef> getUserWorkflowDefs(List<String> groupsAndRoles) {
+        final String GET_USER_WORKFLOWS = "SELECT json_data " +
+                "FROM meta_workflow_def " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM json_array_elements_text((json_data::json ->>'description')::json ->'labels') AS label " +
+                "WHERE label = ANY(?))";
+
+        return queryWithTransaction(GET_USER_WORKFLOWS,
+                query -> query.addParameter(groupsAndRoles)
+                        .executeAndFetch(WorkflowDef.class));
+    }
+
+    @Override
+    public List<TaskDef> getUserTaskDefs(List<String> groupsAndRoles) {
+        final String GET_USER_TASKS = "SELECT json_data " +
+                "FROM meta_task_def " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM json_array_elements_text((json_data::json ->>'description')::json ->'labels') AS label " +
+                "WHERE label = ANY(?))";
+
+        return queryWithTransaction(GET_USER_TASKS,
+                query -> query.addParameter(groupsAndRoles)
+                        .executeAndFetch(TaskDef.class));
     }
 }

@@ -79,7 +79,11 @@ public class ArchivedIndexDAO implements IndexDAO {
             String query, String freeText, int start, int count, List<String> sort) {
         final SearchResult<String> stringSearchResult =
                 searchWorkflows(query, freeText, start, count, sort);
-        final List<WorkflowSummary> summaries = stringSearchResult.getResults().stream()
+        return getSummaries(stringSearchResult);
+    }
+
+    private SearchResult<WorkflowSummary> getSummaries(SearchResult<String> result) {
+        final List<WorkflowSummary> summaries = result.getResults().stream()
                 .map(wfId -> executionDao.getWorkflow(wfId, false))
                 .filter(Objects::nonNull)
                 .map(WorkflowModel::toWorkflow)
@@ -203,5 +207,10 @@ public class ArchivedIndexDAO implements IndexDAO {
 
     public long getWorkflowCount(String query, String freeText) {
         return 0;
+    }
+
+    @Override
+    public SearchResult<WorkflowSummary> getUserSummaries(List<String> groupsAndRoles) {
+        return getSummaries(archiveDAO.getUserWorkflowIds(groupsAndRoles, null));
     }
 }

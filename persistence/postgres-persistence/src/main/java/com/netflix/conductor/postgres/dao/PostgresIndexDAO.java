@@ -299,4 +299,9 @@ public class PostgresIndexDAO extends PostgresBaseDAO implements IndexDAO {
         logger.info("getWorkflowCount is not supported for postgres indexing");
         return 0;
     }
+
+    @Override
+    public SearchResult<WorkflowSummary> getUserSummaries(List<String> groupsAndRoles) {
+        return null;
+    }
 }
