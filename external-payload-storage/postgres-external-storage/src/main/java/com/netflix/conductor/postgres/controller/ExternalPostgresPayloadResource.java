@@ -13,6 +13,7 @@ package com.netflix.conductor.postgres.controller;
 
 import java.io.InputStream;
 
+import com.netflix.conductor.rest.rbac.annotations.RbacAdminAccess;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.InputStreamResource;
@@ -46,6 +47,7 @@ public class ExternalPostgresPayloadResource {
         this.postgresService = postgresService;
     }
 
+    @RbacAdminAccess
     @GetMapping("/{externalPayloadPath}")
     @Operation(
             summary =

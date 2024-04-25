@@ -20,6 +20,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.netflix.conductor.common.metadata.events.EventExecution;
+import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.QueueDAO;
@@ -335,6 +336,31 @@ public class ArchivedExecutionDAO implements ExecutionDAO {
         return workflowDeep.stream()
                 .map(wf -> wf instanceof WorkflowModelSummary ? loadWorkflowFromPrimary(wf) : wf)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean hasAccess(Object[] args, List<String> labels) {
+        return archiveDAO.hasAccess(args, labels);
+    }
+
+    @Override
+    public boolean exists(Object[] args) {
+        return archiveDAO.exists(args);
+    }
+
+    @Override
+    public List<String> getUserWorkflowIds(List<String> labels) {
+        return archiveDAO.getUserWorkflowIds(labels);
+    }
+
+    @Override
+    public List<String> getPresentIds(List<String> ids) {
+        return archiveDAO.getPresentIds(ids);
+    }
+
+    @Override
+    public SearchResult<String> getSearchResultIds(List<String> roles) {
+        return archiveDAO.getSearchResultIds(roles);
     }
 
     private WorkflowModel loadWorkflowFromPrimary(WorkflowModel wf) {

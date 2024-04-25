@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import com.netflix.conductor.common.run.SearchResult;
 import org.springframework.retry.support.RetryTemplate;
 
 import com.netflix.conductor.common.metadata.events.EventExecution;
@@ -544,6 +545,31 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
             throw new NonTransientException(
                     "Unable to remove event execution " + eventExecution.getId(), e);
         }
+    }
+
+    @Override
+    public boolean hasAccess(Object[] args, List<String> labels) {
+        throw new UnsupportedOperationException("hasAccess is not supported in PostgresExecutionDAO");
+    }
+
+    @Override
+    public boolean exists(Object[] args) {
+        throw new UnsupportedOperationException("exists is not supported in PostgresExecutionDAO");
+    }
+
+    @Override
+    public List<String> getUserWorkflowIds(List<String> labels) {
+        throw new UnsupportedOperationException("getUserWorkflowIds is not supported in PostgresExecutionDAO");
+    }
+
+    @Override
+    public List<String> getPresentIds(List<String> ids) {
+        throw new UnsupportedOperationException("getPresentIds is not supported in PostgresExecutionDAO");
+    }
+
+    @Override
+    public SearchResult<String> getSearchResultIds(List<String> roles) {
+        throw new UnsupportedOperationException("getSearchResultIds is not supported in PostgresExecutionDAO");
     }
 
     @Override

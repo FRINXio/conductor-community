@@ -173,130 +173,119 @@ public class PostgresIndexDAO extends PostgresBaseDAO implements IndexDAO {
 
     @Override
     public CompletableFuture<Void> asyncIndexWorkflow(WorkflowSummary workflow) {
-        logger.info("asyncIndexWorkflow is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncIndexWorkflow is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncIndexTask(TaskSummary task) {
-        logger.info("asyncIndexTask is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncIndexTask is not supported for postgres indexing");
     }
 
     @Override
     public SearchResult<String> searchWorkflows(
             String query, String freeText, int start, int count, List<String> sort) {
-        logger.info("searchWorkflows is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("searchWorkflows is not supported for postgres indexing");
     }
 
     @Override
     public SearchResult<String> searchTasks(
             String query, String freeText, int start, int count, List<String> sort) {
-        logger.info("searchTasks is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("searchTasks is not supported for postgres indexing");
     }
 
     @Override
     public void removeWorkflow(String workflowId) {
-        logger.info("removeWorkflow is not supported for postgres indexing");
+        throw new UnsupportedOperationException("removeWorkflow is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncRemoveWorkflow(String workflowId) {
-        logger.info("asyncRemoveWorkflow is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncRemoveWorkflow is not supported for postgres indexing");
     }
 
     @Override
     public void updateWorkflow(String workflowInstanceId, String[] keys, Object[] values) {
-        logger.info("updateWorkflow is not supported for postgres indexing");
+        throw new UnsupportedOperationException("updateWorkflow is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncUpdateWorkflow(
             String workflowInstanceId, String[] keys, Object[] values) {
-        logger.info("asyncUpdateWorkflow is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncUpdateWorkflow is not supported for postgres indexing");
     }
 
     @Override
     public void removeTask(String workflowId, String taskId) {
-        logger.info("removeTask is not supported for postgres indexing");
+        throw new UnsupportedOperationException("removeTask is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncRemoveTask(String workflowId, String taskId) {
-        logger.info("asyncRemoveTask is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncRemoveTask is not supported for postgres indexing");
     }
 
     @Override
     public void updateTask(String workflowId, String taskId, String[] keys, Object[] values) {
-        logger.info("updateTask is not supported for postgres indexing");
+        throw new UnsupportedOperationException("updateTask is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncUpdateTask(
             String workflowId, String taskId, String[] keys, Object[] values) {
-        logger.info("asyncUpdateTask is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncUpdateTask is not supported for postgres indexing");
     }
 
     @Override
     public String get(String workflowInstanceId, String key) {
-        logger.info("get is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("get is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncAddTaskExecutionLogs(List<TaskExecLog> logs) {
-        logger.info("asyncAddTaskExecutionLogs is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncAddTaskExecutionLogs is not supported for postgres indexing");
     }
 
     @Override
     public void addEventExecution(EventExecution eventExecution) {
-        logger.info("addEventExecution is not supported for postgres indexing");
+        throw new UnsupportedOperationException("addEventExecution is not supported for postgres indexing");
     }
 
     @Override
     public List<EventExecution> getEventExecutions(String event) {
-        logger.info("getEventExecutions is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("getEventExecutions is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncAddEventExecution(EventExecution eventExecution) {
-        logger.info("asyncAddEventExecution is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncAddEventExecution is not supported for postgres indexing");
     }
 
     @Override
     public void addMessage(String queue, Message msg) {
-        logger.info("addMessage is not supported for postgres indexing");
+        throw new UnsupportedOperationException("addMessage is not supported for postgres indexing");
     }
 
     @Override
     public CompletableFuture<Void> asyncAddMessage(String queue, Message message) {
-        logger.info("asyncAddMessage is not supported for postgres indexing");
-        return CompletableFuture.completedFuture(null);
+        throw new UnsupportedOperationException("asyncAddMessage is not supported for postgres indexing");
     }
 
     @Override
     public List<Message> getMessages(String queue) {
-        logger.info("getMessages is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("getMessages is not supported for postgres indexing");
     }
 
     @Override
     public List<String> searchArchivableWorkflows(String indexName, long archiveTtlDays) {
-        logger.info("searchArchivableWorkflows is not supported for postgres indexing");
-        return null;
+        throw new UnsupportedOperationException("searchArchivableWorkflows is not supported for postgres indexing");
     }
 
     public long getWorkflowCount(String query, String freeText) {
-        logger.info("getWorkflowCount is not supported for postgres indexing");
-        return 0;
+        throw new UnsupportedOperationException("getWorkflowCount is not supported for postgres indexing");
+    }
+
+    @Override
+    public SearchResult<WorkflowSummary> getSummaries(SearchResult<String> searchResultIds) {
+        throw new UnsupportedOperationException("getSummaries is not supported for postgres indexing");
     }
 }
