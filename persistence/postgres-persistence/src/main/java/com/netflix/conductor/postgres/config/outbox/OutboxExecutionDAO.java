@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.netflix.conductor.common.metadata.tasks.PollData;
 import com.netflix.conductor.common.metadata.tasks.TaskDef;
+import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.core.exception.NonTransientException;
 import com.netflix.conductor.dao.ConcurrentExecutionLimitDAO;
 import com.netflix.conductor.dao.PollDataDAO;
@@ -305,6 +306,31 @@ public class OutboxExecutionDAO extends PostgresBaseDAO implements ExecutionDAO,
     @Override
     public void removeEventExecution(EventExecution eventExecution) {
         delegate.removeEventExecution(eventExecution);
+    }
+
+    @Override
+    public boolean hasAccess(Object[] args, List<String> labels) {
+        throw new UnsupportedOperationException("hasAccess is not supported in OutboxExecutionDAO");
+    }
+
+    @Override
+    public boolean exists(Object[] args) {
+        throw new UnsupportedOperationException("exists is not supported in OutboxExecutionDAO");
+    }
+
+    @Override
+    public List<String> getUserWorkflowIds(List<String> labels) {
+        throw new UnsupportedOperationException("getUserWorkflowIds is not supported in OutboxExecutionDAO");
+    }
+
+    @Override
+    public List<String> getPresentIds(List<String> ids) {
+        throw new UnsupportedOperationException("getPresentIds is not supported in OutboxExecutionDAO");
+    }
+
+    @Override
+    public SearchResult<String> getSearchResultIds(List<String> roles) {
+        throw new UnsupportedOperationException("getSearchResultIds is not supported in OutboxExecutionDAO");
     }
 
     @Override

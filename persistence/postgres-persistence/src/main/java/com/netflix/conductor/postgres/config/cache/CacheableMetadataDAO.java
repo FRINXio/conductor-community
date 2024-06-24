@@ -12,15 +12,17 @@
  */
 package com.netflix.conductor.postgres.config.cache;
 
-import com.netflix.conductor.common.metadata.tasks.TaskDef;
-import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
-import com.netflix.conductor.dao.MetadataDAO;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.cache.CacheManager;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+
+import com.netflix.conductor.common.metadata.BaseDef;
+import com.netflix.conductor.common.metadata.tasks.TaskDef;
+import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
+import com.netflix.conductor.dao.MetadataDAO;
 
 public class CacheableMetadataDAO implements MetadataDAO {
     public static final String TASK_DEF_CACHE_NAME = "task-def";
@@ -32,25 +34,31 @@ public class CacheableMetadataDAO implements MetadataDAO {
     }
 
     @Override
-    @CachePut(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key="{#taskDef.getName}")
+    @CachePut(
+            value = TASK_DEF_CACHE_NAME,
+            cacheManager = TASKDEF_CACHE_MANAGER,
+            key = "{#taskDef.getName}")
     public TaskDef createTaskDef(TaskDef taskDef) {
         return delegate.createTaskDef(taskDef);
     }
 
     @Override
-    @CachePut(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key="{#taskDef.getName}")
+    @CachePut(
+            value = TASK_DEF_CACHE_NAME,
+            cacheManager = TASKDEF_CACHE_MANAGER,
+            key = "{#taskDef.getName}")
     public TaskDef updateTaskDef(TaskDef taskDef) {
         return delegate.updateTaskDef(taskDef);
     }
 
     @Override
-    @Cacheable(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key="{#name}")
+    @Cacheable(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key = "{#name}")
     public TaskDef getTaskDef(String name) {
-        return delegate.getTaskDef(name) ;
+        return delegate.getTaskDef(name);
     }
 
     @Override
-    @CacheEvict(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key="{#name}")
+    @CacheEvict(value = TASK_DEF_CACHE_NAME, cacheManager = TASKDEF_CACHE_MANAGER, key = "{#name}")
     public void removeTaskDef(String name) {
         delegate.removeTaskDef(name);
     }
@@ -93,5 +101,25 @@ public class CacheableMetadataDAO implements MetadataDAO {
     @Override
     public List<WorkflowDef> getAllWorkflowDefsLatestVersions() {
         return delegate.getAllWorkflowDefsLatestVersions();
+    }
+
+    @Override
+    public boolean hasAccess(Object[] args, List<String> labels, String uri) {
+        return delegate.hasAccess(args, labels, uri);
+    }
+
+    @Override
+    public boolean exists(Object[] args, String uri) {
+        return delegate.exists(args, uri);
+    }
+
+    @Override
+    public List<? extends BaseDef> getUserTaskDefs(List<String> roles) {
+        return delegate.getUserTaskDefs(roles);
+    }
+
+    @Override
+    public List<? extends BaseDef> getUserWorkflowDefs(List<String> roles) {
+        return delegate.getUserWorkflowDefs(roles);
     }
 }

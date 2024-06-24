@@ -48,6 +48,10 @@ public class PostgresMetadataDAO extends PostgresBaseDAO implements MetadataDAO,
 
     private final ScheduledExecutorService scheduledExecutorService;
 
+    private static final String WORKFLOW = "workflow";
+
+    private static final String START_WF = "startWf";
+
     public PostgresMetadataDAO(
             RetryTemplate retryTemplate,
             ObjectMapper objectMapper,
@@ -574,5 +578,121 @@ public class PostgresMetadataDAO extends PostgresBaseDAO implements MetadataDAO,
 
                     return taskDef.getName();
                 });
+    }
+
+    @Override
+    public boolean hasAccess(Object[] args, List<String> labels, String uri) {
+        String name = (String) args[0];
+        Integer version = (Integer) args[1];
+        if (uri.contains(WORKFLOW) || uri.equals(START_WF)) {
+
+            if (version == null) {
+                String IS_VALID_WF = "SELECT EXISTS (" +
+                        "SELECT 1 " +
+                        "FROM meta_workflow_def, " +
+                        "json_array_elements_text(((json_data::json ->> 'description')::json) -> 'labels') AS label " +
+                        "WHERE name=? AND label=ANY(?) AND version=latest_version" +
+                        ") AS has_access;";
+
+                return queryWithTransaction(IS_VALID_WF,
+                        query -> query.addParameter(name)
+                                .addParameter(labels)
+                                .exists());
+
+            } else {
+                String IS_VALID_WF = "SELECT EXISTS (" +
+                        "SELECT 1 " +
+                        "FROM meta_workflow_def, " +
+                        "json_array_elements_text(((json_data::json ->> 'description')::json) -> 'labels') AS label " +
+                        "WHERE name=? AND label=ANY(?) AND version=?" +
+                        ") AS has_access;";
+
+                return queryWithTransaction(IS_VALID_WF,
+                        query -> query.addParameter(name)
+                                .addParameter(labels)
+                                .addParameter(version)
+                                .exists());
+            }
+        } else {
+            String IS_VALID_TASK = "SELECT EXISTS (" +
+                    "SELECT 1 " +
+                    "FROM meta_task_def," +
+                    "json_array_elements_text((json_data::json -> 'description')::json) AS label" +
+                    "WHERE name=? AND label=ANY(?)" +
+                    ") AS has_access;";
+            return queryWithTransaction(IS_VALID_TASK,
+                    query -> query.addParameter(name)
+                            .addParameter(labels)
+                            .exists());
+        }
+    }
+
+    @Override
+    public boolean exists(Object[] args, String uri) {
+        String name = (String) args[0];
+        Integer version = (Integer) args[1];
+
+        if (uri.contains(WORKFLOW) || uri.equals(START_WF)) {
+            if (version == null) {
+                final String WF_EXIST = "SELECT EXISTS (" +
+                        "SELECT 1 " +
+                        "FROM meta_workflow_def " +
+                        "WHERE name=? AND version=latest_version) " +
+                        "AS exist;";
+
+                return queryWithTransaction(WF_EXIST,
+                        query -> query.addParameter(name)
+                        .exists());
+            } else {
+                final String WF_EXIST = "SELECT EXISTS (" +
+                        "SELECT 1 " +
+                        "FROM meta_workflow_def " +
+                        "WHERE name=? AND version=?) " +
+                        "AS exist;";
+
+                return queryWithTransaction(WF_EXIST,
+                        query -> query.addParameter(name)
+                                .addParameter(version)
+                        .exists());
+            }
+        } else {
+            final String TASK_EXIST = "SELECT EXISTS (" +
+                    "SELECT 1 " +
+                    "FROM meta_task_def " +
+                    "WHERE name=?) " +
+                    "AS exist;";
+
+            return queryWithTransaction(TASK_EXIST,
+                    query -> query.addParameter(name)
+                            .exists());
+        }
+    }
+
+    @Override
+    public List<WorkflowDef> getUserWorkflowDefs(List<String> roles) {
+        final String GET_USER_WORKFLOWS = "SELECT json_data " +
+                "FROM meta_workflow_def " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM json_array_elements_text((json_data::json ->>'description')::json ->'labels') AS label " +
+                "WHERE label = ANY(?));";
+
+        return queryWithTransaction(GET_USER_WORKFLOWS,
+                query -> query.addParameter(roles)
+                        .executeAndFetch(WorkflowDef.class));
+    }
+
+    @Override
+    public List<TaskDef> getUserTaskDefs(List<String> roles) {
+        final String GET_USER_TASKS = "SELECT json_data " +
+                "FROM meta_task_def " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM json_array_elements_text((json_data::json ->>'description')::json ->'labels') AS label " +
+                "WHERE label = ANY(?));";
+
+        return queryWithTransaction(GET_USER_TASKS,
+                query -> query.addParameter(roles)
+                        .executeAndFetch(TaskDef.class));
     }
 }

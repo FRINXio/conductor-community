@@ -79,13 +79,18 @@ public class ArchivedIndexDAO implements IndexDAO {
             String query, String freeText, int start, int count, List<String> sort) {
         final SearchResult<String> stringSearchResult =
                 searchWorkflows(query, freeText, start, count, sort);
-        final List<WorkflowSummary> summaries = stringSearchResult.getResults().stream()
-                .map(wfId -> executionDao.getWorkflow(wfId, false))
-                .filter(Objects::nonNull)
-                .map(WorkflowModel::toWorkflow)
-                .filter(Objects::nonNull)
-                .map(WorkflowSummary::new)
-                .collect(Collectors.toList());
+        return getSummaries(stringSearchResult);
+    }
+
+    public SearchResult<WorkflowSummary> getSummaries(SearchResult<String> stringSearchResult) {
+        final List<WorkflowSummary> summaries =
+                stringSearchResult.getResults().stream()
+                        .map(wfId -> executionDao.getWorkflow(wfId, false))
+                        .filter(Objects::nonNull)
+                        .map(WorkflowModel::toWorkflow)
+                        .filter(Objects::nonNull)
+                        .map(WorkflowSummary::new)
+                        .collect(Collectors.toList());
         return new SearchResult<>(summaries.size(), summaries);
     }
 
