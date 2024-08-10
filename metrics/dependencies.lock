@@ -1,12 +1,12 @@
 {
     "annotationProcessor": {
         "org.springframework.boot:spring-boot-configuration-processor": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         }
     },
     "compileClasspath": {
         "com.google.guava:guava": {
-            "locked": "30.0-jre"
+            "locked": "32.1.2-jre"
         },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.14.0"
@@ -54,15 +54,15 @@
             "locked": "2.17.1"
         },
         "org.springframework.boot:spring-boot-starter": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         }
     },
     "runtimeClasspath": {
         "com.google.guava:guava": {
-            "locked": "30.0-jre"
+            "locked": "32.1.2-jre"
         },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.14.0"
@@ -112,7 +112,7 @@
     },
     "testCompileClasspath": {
         "com.google.guava:guava": {
-            "locked": "30.0-jre"
+            "locked": "32.1.2-jre"
         },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.14.0"
@@ -166,21 +166,21 @@
             "locked": "5.12.0"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.springframework.boot:spring-boot-starter-test": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.testcontainers:mockserver": {
-            "locked": "1.17.2"
+            "locked": "1.18.3"
         }
     },
     "testRuntimeClasspath": {
         "com.google.guava:guava": {
-            "locked": "30.0-jre"
+            "locked": "32.1.2-jre"
         },
         "com.netflix.conductor:conductor-common": {
             "locked": "3.14.0"
@@ -234,16 +234,16 @@
             "locked": "5.12.0"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.springframework.boot:spring-boot-starter-test": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.springframework.boot:spring-boot-starter-web": {
-            "locked": "2.6.7"
+            "locked": "2.7.16"
         },
         "org.testcontainers:mockserver": {
-            "locked": "1.17.2"
+            "locked": "1.18.3"
         }
     }
 }
