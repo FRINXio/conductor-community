@@ -40,7 +40,7 @@ import org.springframework.test.context.junit4.SpringRunner;
             FlywayAutoConfiguration.class,
         })
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = "spring.flyway.clean-disabled=false")
 public class PostgresExecutionDAOTest extends ExecutionDAOTest {
 
     @Autowired private PostgresExecutionDAO executionDAO;
@@ -50,7 +50,6 @@ public class PostgresExecutionDAOTest extends ExecutionDAOTest {
     // clean the database between tests.
     @Before
     public void before() {
-        flyway.clean();
         flyway.migrate();
     }
 

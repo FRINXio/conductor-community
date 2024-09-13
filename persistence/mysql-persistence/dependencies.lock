@@ -186,8 +186,8 @@
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
         },
-        "org.codehaus.groovy:groovy-all": {
-            "locked": "3.0.9"
+        "org.apache.groovy:groovy-all": {
+            "locked": "4.0.9"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
             "locked": "6.8.23"
@@ -305,8 +305,8 @@
             ],
             "locked": "2.17.1"
         },
-        "org.codehaus.groovy:groovy-all": {
-            "locked": "3.0.9"
+        "org.apache.groovy:groovy-all": {
+            "locked": "4.0.9"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
             "locked": "6.8.23"

@@ -132,8 +132,8 @@
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
         },
-        "org.codehaus.groovy:groovy-all": {
-            "locked": "3.0.9"
+        "org.apache.groovy:groovy-all": {
+            "locked": "4.0.9"
         },
         "org.junit.vintage:junit-vintage-engine": {
             "locked": "5.8.2"
@@ -142,10 +142,10 @@
             "locked": "5.12.0"
         },
         "org.spockframework:spock-core": {
-            "locked": "2.1-groovy-3.0"
+            "locked": "2.4-M1-groovy-4.0"
         },
         "org.spockframework:spock-spring": {
-            "locked": "2.1-groovy-3.0"
+            "locked": "2.4-M1-groovy-4.0"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
             "locked": "2.6.7"
@@ -293,11 +293,11 @@
             ],
             "locked": "2.17.1"
         },
-        "org.codehaus.groovy:groovy-all": {
+        "org.apache.groovy:groovy-all": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-test-util"
             ],
-            "locked": "3.0.9"
+            "locked": "4.0.9"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
             "firstLevelTransitive": [
@@ -321,13 +321,13 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-test-util"
             ],
-            "locked": "2.1-groovy-3.0"
+            "locked": "2.4-M1-groovy-4.0"
         },
         "org.spockframework:spock-spring": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-test-util"
             ],
-            "locked": "2.1-groovy-3.0"
+            "locked": "2.4-M1-groovy-4.0"
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
             "locked": "2.6.7"

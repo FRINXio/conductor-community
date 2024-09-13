@@ -14,7 +14,7 @@ package io.orkes.conductor.dao.postgres.archive;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.postgres.config.PostgresProperties;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;

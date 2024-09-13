@@ -15,6 +15,7 @@ package io.orkes.conductor.dao.postgres.archive;
 import com.netflix.conductor.postgres.config.PostgresProperties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -26,12 +27,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-
-/*
-  Extracted data source from the main {@link PostgresArchiveDAOConfiguration}.
-  The original implementation with dataSource bean inside {@link PostgresArchiveDAOConfiguration} caused
-  a dependency loop between dataSource - metrics - archive.
- */
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false)
@@ -73,8 +72,32 @@ public class PostgresArchiveDatasourceConfiguration {
         config.setUsername(user);
         config.setPassword(password);
         config.setMaximumPoolSize(maxPoolSize);
+        config.setDriverClassName("org.postgresql.Driver");
+        return new HikariDataSource(config);
+    }
 
-        HikariDataSource hikariDataSource = new HikariDataSource(config);
-        return hikariDataSource;
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            @Qualifier("searchDatasource") DataSource searchDatasource) {
+        LocalContainerEntityManagerFactoryBean factoryBean =
+                new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setDataSource(searchDatasource);
+        factoryBean.setPackagesToScan("com.netflix");
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+        vendorAdapter.setShowSql(true);
+
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+        factoryBean
+                .getJpaPropertyMap()
+                .put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        return factoryBean;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(
+            EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 }

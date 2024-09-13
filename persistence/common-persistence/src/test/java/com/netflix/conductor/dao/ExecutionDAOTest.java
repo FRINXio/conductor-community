@@ -48,7 +48,7 @@ public abstract class ExecutionDAOTest {
     @Test
     public void testTaskExceedsLimit() {
         TaskDef taskDefinition = new TaskDef();
-        taskDefinition.setName("task1");
+        taskDefinition.setName("task100");
         taskDefinition.setConcurrentExecLimit(1);
 
         WorkflowTask workflowTask = new WorkflowTask();
@@ -64,7 +64,7 @@ public abstract class ExecutionDAOTest {
             task.setTaskId("t_" + i);
             task.setWorkflowInstanceId("workflow_" + i);
             task.setReferenceTaskName("task1");
-            task.setTaskDefName("task1");
+            task.setTaskDefName("task100");
             tasks.add(task);
             task.setStatus(TaskModel.Status.SCHEDULED);
             task.setWorkflowTask(workflowTask);
