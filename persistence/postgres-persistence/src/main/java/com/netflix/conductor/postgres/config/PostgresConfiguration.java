@@ -19,8 +19,11 @@ import javax.sql.DataSource;
 
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.postgres.config.outbox.OutboxExecutionDAO;
+import com.netflix.conductor.postgres.dao.PostgresLockDAO;
+import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -111,6 +114,22 @@ public class PostgresConfiguration {
         retryTemplate.setRetryPolicy(retryPolicy);
         retryTemplate.setBackOffPolicy(new NoBackOffPolicy());
         return retryTemplate;
+    }
+
+    @Bean
+    public DataSource createLockDataSource() {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl(properties.getLockDbUrl());
+        ds.setUsername(properties.getLockDbUsername());
+        ds.setPassword(properties.getLockDbPassword());
+        return ds;
+    }
+
+    @Bean
+    public PostgresLockDAO postgresLockDAO(
+            @Qualifier("postgresRetryTemplate") RetryTemplate retryTemplate,
+            ObjectMapper objectMapper, @Qualifier("createLockDataSource") DataSource ds) {
+        return new PostgresLockDAO(retryTemplate, objectMapper, ds, properties);
     }
 
     public static class CustomRetryPolicy extends SimpleRetryPolicy {
