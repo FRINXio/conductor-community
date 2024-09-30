@@ -11,14 +11,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.core:jackson-core"
 
     //Metrics
-    implementation "io.micrometer:micrometer-registry-prometheus:1.7.5"
-    implementation "io.micrometer:micrometer-core:1.7.5"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "io.micrometer:micrometer-core"
     implementation "com.netflix.spectator:spectator-reg-micrometer:${revSpectator}"
     implementation "com.netflix.spectator:spectator-reg-metrics3:${revSpectator}"
     implementation "com.netflix.spectator:spectator-api:${revSpectator}"
@@ -41,13 +40,16 @@ dependencies {
 
 
     testImplementation 'org.hamcrest:hamcrest'
-    testImplementation "org.awaitility:awaitility:3.1.6"
+    testImplementation "org.awaitility:awaitility"
 
     //postgres test container
     testImplementation "org.testcontainers:postgresql:${revTestContainer}"
 
     //Fake data generator
-    testImplementation "com.github.javafaker:javafaker:1.0.2"
+    testImplementation ('com.github.javafaker:javafaker:1.0.2') {
+        exclude group: 'org.yaml', module: 'snakeyaml'
+    }
+    testImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
 }
 
 test {

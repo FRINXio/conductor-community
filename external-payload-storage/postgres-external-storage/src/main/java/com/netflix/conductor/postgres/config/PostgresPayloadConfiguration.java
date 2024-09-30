@@ -13,7 +13,7 @@ package com.netflix.conductor.postgres.config;
 
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;

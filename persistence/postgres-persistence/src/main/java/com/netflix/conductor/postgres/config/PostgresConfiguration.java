@@ -14,7 +14,7 @@ package com.netflix.conductor.postgres.config;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import com.netflix.conductor.dao.ExecutionDAO;

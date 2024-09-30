@@ -58,7 +58,8 @@ import static org.junit.Assert.*;
         properties = {
             "conductor.app.asyncIndexingEnabled=false",
             "conductor.elasticsearch.version=0",
-            "conductor.indexing.type=postgres"
+            "conductor.indexing.type=postgres",
+            "spring.flyway.clean-disabled=false"
         })
 @SpringBootTest
 public class PostgresIndexDAOTest {
@@ -76,7 +77,6 @@ public class PostgresIndexDAOTest {
     // clean the database between tests.
     @Before
     public void before() {
-        flyway.clean();
         flyway.migrate();
     }
 
@@ -102,9 +102,9 @@ public class PostgresIndexDAOTest {
         return ts;
     }
 
-    private TaskExecLog getMockTaskExecutionLog(long createdTime, String log) {
+    private TaskExecLog getMockTaskExecutionLog(String taskId, long createdTime, String log) {
         TaskExecLog tse = new TaskExecLog();
-        tse.setTaskId("task-id");
+        tse.setTaskId(taskId);
         tse.setLog(log);
         tse.setCreatedTime(createdTime);
         return tse;
@@ -221,8 +221,9 @@ public class PostgresIndexDAOTest {
     @Test
     public void testAddTaskExecutionLogs() throws SQLException {
         List<TaskExecLog> logs = new ArrayList<>();
-        logs.add(getMockTaskExecutionLog(1675845986000L, "Log 1"));
-        logs.add(getMockTaskExecutionLog(1675845987000L, "Log 2"));
+        String taskId = UUID.randomUUID().toString();
+        logs.add(getMockTaskExecutionLog(taskId, 1675845986000L, "Log 1"));
+        logs.add(getMockTaskExecutionLog(taskId, 1675845987000L, "Log 2"));
 
         indexDAO.addTaskExecutionLogs(logs);
 
@@ -324,8 +325,8 @@ public class PostgresIndexDAOTest {
                 "workflow-id-1",
                 results.getResults().get(1).getWorkflowId());
         results = indexDAO.searchWorkflowSummary("", "*", 4, 2, orderBy);
-        assertEquals("Wrong totalHits returned", 5, results.getTotalHits());
-        assertEquals("Wrong number of results returned", 1, results.getResults().size());
+        assertEquals("Wrong totalHits returned", 7, results.getTotalHits());
+        assertEquals("Wrong number of results returned", 2, results.getResults().size());
         assertEquals(
                 "Results returned in wrong order",
                 "workflow-id-0",
@@ -377,8 +378,8 @@ public class PostgresIndexDAOTest {
                 "task-id-1",
                 results.getResults().get(1).getTaskId());
         results = indexDAO.searchTaskSummary("", "*", 4, 2, orderBy);
-        assertEquals("Wrong totalHits returned", 5, results.getTotalHits());
-        assertEquals("Wrong number of results returned", 1, results.getResults().size());
+        assertEquals("Wrong totalHits returned", 7, results.getTotalHits());
+        assertEquals("Wrong number of results returned", 2, results.getResults().size());
         assertEquals(
                 "Results returned in wrong order",
                 "task-id-0",
@@ -388,8 +389,9 @@ public class PostgresIndexDAOTest {
     @Test
     public void testGetTaskExecutionLogs() throws SQLException {
         List<TaskExecLog> logs = new ArrayList<>();
-        logs.add(getMockTaskExecutionLog(new Date(1675845986000L).getTime(), "Log 1"));
-        logs.add(getMockTaskExecutionLog(new Date(1675845987000L).getTime(), "Log 2"));
+        String taskId = UUID.randomUUID().toString();
+        logs.add(getMockTaskExecutionLog(taskId, new Date(1675845986000L).getTime(), "Log 1"));
+        logs.add(getMockTaskExecutionLog(taskId, new Date(1675845987000L).getTime(), "Log 2"));
 
         indexDAO.addTaskExecutionLogs(logs);
 

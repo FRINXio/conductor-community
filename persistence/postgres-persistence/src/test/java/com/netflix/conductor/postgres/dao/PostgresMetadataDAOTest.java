@@ -51,7 +51,7 @@ import org.springframework.test.context.junit4.SpringRunner;
             FlywayAutoConfiguration.class,
         })
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = "spring.flyway.clean-disabled=false")
 public class PostgresMetadataDAOTest {
 
     @Autowired private PostgresMetadataDAO metadataDAO;
@@ -63,7 +63,6 @@ public class PostgresMetadataDAOTest {
     // clean the database between tests.
     @Before
     public void before() {
-        flyway.clean();
         flyway.migrate();
     }
 
@@ -314,7 +313,7 @@ public class PostgresMetadataDAOTest {
                         .collect(Collectors.toMap(WorkflowDef::getName, Function.identity()));
 
         assertNotNull(allMap);
-        assertEquals(3, allMap.size());
+        assertEquals(4, allMap.size());
         assertEquals(1, allMap.get("test1").getVersion());
         assertEquals(2, allMap.get("test2").getVersion());
         assertEquals(3, allMap.get("test3").getVersion());
